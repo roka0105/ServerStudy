@@ -1,0 +1,216 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 한국어(대한민국) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+#pragma code_page(949)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOGEX 0, 0, 211, 201
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "로그인",IDC_LOGIN,"Button",BS_AUTORADIOBUTTON,81,40,35,10
+    CONTROL         "회원가입",IDC_JOIN,"Button",BS_AUTORADIOBUTTON,79,71,41,10
+    CONTROL         "방 선택",IDC_LIST,"Button",BS_AUTORADIOBUTTON,79,100,37,10
+    CONTROL         "프로그램 종료",IDC_END,"Button",BS_AUTORADIOBUTTON,78,128,56,10
+    DEFPUSHBUTTON   "확인",IDC_OK,79,149,50,35
+    GROUPBOX        "Menu",IDC_STATIC,57,32,93,111
+    PUSHBUTTON      "로그아웃",IDC_LOGOUT,158,35,39,21
+END
+
+IDD_DIALOG2 DIALOGEX 0, 0, 310, 117
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "확인",IDC_OK,191,91,50,14
+    PUSHBUTTON      "나가기",IDCANCEL,246,91,50,14
+    EDITTEXT        IDC_ID,81,28,167,19,ES_AUTOHSCROLL
+    LTEXT           "아이디",IDC_STATIC,33,34,20,8
+    EDITTEXT        IDC_PW,81,57,167,19,ES_AUTOHSCROLL
+    LTEXT           "비밀번호",IDC_STATIC,30,62,26,8
+    LTEXT           "",IDC_ERR,50,88,129,14
+END
+
+IDD_DIALOG3 DIALOGEX 0, 0, 263, 177
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "확인",1,71,116,50,14
+    PUSHBUTTON      "취소",IDCANCEL,152,116,50,14
+    EDITTEXT        IDC_ID,78,30,123,17,ES_AUTOHSCROLL
+    LTEXT           "아이디",IDC_STATIC,40,35,20,8
+    LTEXT           "비밀번호",IDC_STATIC,35,61,26,8
+    EDITTEXT        IDC_PW,79,57,123,17,ES_AUTOHSCROLL
+    LTEXT           "닉네임",IDC_STATIC,38,87,20,8
+    EDITTEXT        IDC_NICKNAME,79,87,123,17,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ERR,62,148,146,8
+END
+
+IDD_DIALOG4 DIALOGEX 0, 0, 310, 177
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "확인",1,199,156,50,14
+    PUSHBUTTON      "취소",IDCANCEL,253,156,50,14
+    LISTBOX         IDC_ROOMLIST,27,24,148,127,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "방 목록",IDC_STATIC,22,15,160,141
+    LTEXT           "닉네임:",IDC_STATIC,194,30,40,8
+    LTEXT           "",IDC_NICKNAME,229,28,58,14
+    GROUPBOX        "유저 정보",IDC_STATIC,189,21,107,61
+END
+
+IDD_DIALOG5 DIALOGEX 0, 0, 310, 177
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "나가기",IDCANCEL,253,156,50,14
+    EDITTEXT        IDC_EDIT2,22,15,267,49,ES_MULTILINE | ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 204
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_DIALOG2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 303
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 110
+    END
+
+    IDD_DIALOG3, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 256
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_DIALOG4, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 303
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_DIALOG5, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 303
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG2 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG3 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG4 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG5 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // 한국어(대한민국) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
