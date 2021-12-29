@@ -139,14 +139,23 @@ bool LoginCheck(ClientInfo* c, UserInfo* userinfo)
 	}
 	//유저가 입력한 아이디,비밀번호와 일치하는 정보 찾기.
 	for (int i = 0; i < UserCount; ++i)
-	{
+	{   
 		if (!strcmp(User[i]->ID, userinfo->ID) && !strcmp(User[i]->PW, userinfo->PW))
-		{
-			c->user->loging = true;
-			size = PackPacket(c->sendbuf, PROTOCOL::LOGINRESULT, MSGTYPE::LOGINSUCCESS, LOGIN_SUCCESS_MSG);
-			retval = send(c->sock, c->sendbuf, size, 0);
-			if (retval == SOCKET_ERROR)err_display((char*)"login success send()");
-			return true;
+		{   //이미 로그인 중인 경우
+			if (User[i]->loging)
+			{
+				size = PackPacket(c->sendbuf, PROTOCOL::LOGINRESULT, MSGTYPE::NULL_FAIL, LOGING_TRUE_MSG);
+				retval = send(c->sock, c->sendbuf, size, 0);
+				if (retval == SOCKET_ERROR)err_display((char*)"login success send()");
+				return false;
+			}//로그인 성공시
+			else
+			{
+				size = PackPacket(c->sendbuf, PROTOCOL::LOGINRESULT, MSGTYPE::LOGINSUCCESS, LOGIN_SUCCESS_MSG);
+				retval = send(c->sock, c->sendbuf, size, 0);
+				if (retval == SOCKET_ERROR)err_display((char*)"login success send()");
+				return true;
+			}
 		}
 	}
 	//정보중에 유저가 입력한 정보가 없는 경우.
@@ -233,7 +242,14 @@ void MenuProcess(ClientInfo* c)
 	switch (protocol)
 	{
 	case PROTOCOL::LOGOUT:
-		c->user->loging = false;
+		for (int i = 0; i < UserCount; ++i)
+		{
+			if (!strcmp(c->user->ID, User[i]->ID))
+			{
+				User[i]->loging = false;
+				break;
+			}
+		}
 		ZeroMemory(c->user, sizeof(UserInfo));
 		size = PackPacket(c->sendbuf, PROTOCOL::LOGINRESULT, MSGTYPE::LOGOUT, LOGOUT_MSG);
 		retval = send(c->sock, c->sendbuf, size, 0);
@@ -304,7 +320,9 @@ void LoginProcess(ClientInfo* c)
 			{
 				if (!strcmp(userinfo->ID, User[i]->ID))
 				{
+					User[i]->loging = true;
 					memcpy(c->user, User[i], sizeof(UserInfo));
+					break;
 				}
 			}
 			c->state = STATE::MAINMENU;
@@ -484,6 +502,42 @@ void RoomProcess(ClientInfo* c)
 		//	return;
 	}
 }
+//해당 프로세스에서 패배,승리 판단 기능 및 오류에 대한 수정에 대한 주석
+/*게임 패배, 승리 시스템 구현
+
+패배조건(Server)
+1.일정시간내에 두 클라가 같은 입력을 했을 시 둘다 탈락
+2.시간이 지나고 이전 클라의 입력값과 같은 입력을 했을 시 해당 클라만 탈락
+3.순차적 입력이 아닐시 해당 클라 탈락(이전 숫자가 1인데 3을 입력했다던가 2인데 1을 입력했다던가 하는 경우)
+4.이전 클라가 LIMITNUM(인원제한설정) - 1 의 숫자를 탈락 조건에 걸리지 않고 외쳤을 시
+남은 클라는 눈치게임에서 패배.(마지막 숫자를 외치게 되기 때문에 자동으로 탈락 처리)
+============================================================================================================
+
+*구현 과정시 생긴 오류 수정
+1.짧은 시간 내에 두개의 클라의 입력이 들어왔을때 스레드가 공용자원을 접근할때
+첫번째 클라의 입력값 처리 후 game정보에 beforclient와 starttime정보를 저장한 후에 두번째 클라 처리가 이루어 져야 하는데
+cpu가 스레드를 어떤 스레드를 처리할지 모르기 때문에 1번째 클라의 정보가 game정보에 저장되기도 전에
+2번째 클라의 정보를 처리하는 문제가 발생.
+= > 공용자원 접근 시 EnterCriticalsection / LeaveCriticalsection 해줌으로써 해결.(앞의 스레드의 열쇠가 반납되어야 다음 스레드가 접근 가능)
+
+2.방 입장시 state::gamestartprocess의 recvpacket부분에서 모든 클라이언트가 wait이 걸려있고 이 wait은 사용자가 숫자를 클릭했을때
+입력값을 받아오며 풀린다.
+하지만 이미 게임의 승부가 판정 된 경우 클라의 입력이 들어오지 않았음에도 게임을 종료해야한다.
+그렇게 하기 위해서는 입력을 하지 않은 클라에 대한 recvpacket wait 상태해제 처리가 필요했다.
+
+= > 게임이 종료된 경우(1.탈락자가 나온 경우 2.이전 클라가 외친 숫자가 마지막 기회였을 경우)
+(Server)
+1.게임 종료시점의 클라에서 아직 입력값이 없는(client->gamenumber == 0)
+클라정보에 접근하여 입력하지 않은 클라에 protocol::end를 send한다.
+(Client)
+2.클라이언트 recv thread의  protocol::end에서 Client->state == STATE::END2로 설정후 hWriteEvent  켜준다.
+3.클라이언트 send thread의 WaitForSingleObject(hWriteEvent)가 wait상태에서 해제되며 END2의 명령을 수행
+END2에서 server에 protocol end를 send한다.
+(Server)
+4.아직 입력값이 없이 recv에서 wait이던 클라에게 패킷이 들어오며 wait상태 해제, 이 패킷의 프로토콜은 end 이므로
+c->state == STATE::END로 바로 상태를 바꿔 endprocess 함수로 보낸다.(cs.675)=>주석땜에 711줄로 변경됨.
+============================================================================================================
+*/
 void GameStartProcess(ClientInfo* c)
 {
 	int size = 0;

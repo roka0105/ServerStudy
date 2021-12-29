@@ -15,6 +15,7 @@
 #define NULL_MSG "정보를 입력하세요\r\n"
 #define LOGIN_NONE_MSG "일치하는 정보가 없습니다.\n"
 #define LOGIN_SUCCESS_MSG "로그인에 성공하셨습니다\n"
+#define LOGING_TRUE_MSG "이미 로그인 중인 아이디 입니다.\n"
 #define JOIN_SUCCESS_MSG "회원가입 성공!\n"
 #define JOIN_SAMEID_MSG "사용하실 수 없는 아이디 입니다.\n다른 아이디를 입력하세요!\n"
 #define JOIN_SAMENICK_MSG "사용하실 수 없는 닉네임 입니다.\n다른 닉네임을 입력하세요!\n"
