@@ -73,6 +73,8 @@ enum class PROTOCOL
 	ROOMRESULT,
 	CHECKSTARTGAME,
 	STARTGAME,
+	CREATEROOM,
+	REROOMLISTINFO,
 	END,
 	EXIT,
 	MAX
@@ -85,6 +87,8 @@ enum class STATE
 	JOIN,
 	ROOMLIST,
 	ROOM,
+	CREATEROOM,
+	REROOMLISTINFO,
 	GAMESTART,
 	BACKPAGE,
 	LOGOUT,
@@ -168,6 +172,7 @@ const func(const* v)일때 앞의 const는 v의 값을 변경하지 않겠다는 의미이고, 뒤의 
 int PackPacket(char* sendbuf, const PROTOCOL protocol, const int roomcount, const int limitattendcount,RoomInfo** roomlist,UserInfo* user);
 void UnPackPacket(const char* recvbuf, char* id, char* pw, char* nickname);
 void UnPackPacket(const char* recvbuf, int& number);
+void UnPackPacket(const char* recvbuf, char* roomname);
 
 void AddClient(ClientInfo* c);
 void RemoveClient(ClientInfo* c);

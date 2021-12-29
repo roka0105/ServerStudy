@@ -405,6 +405,8 @@ void RoomListProcess(ClientInfo* c)
 	int size = 0;
 	int retval = 0;
 	int index = 0;
+	char temp[MAXBUF];
+	ZeroMemory(temp, MAXBUF);
 	if (!RecvPacket(c->sock, c->recvbuf))
 	{
 		c->state = STATE::EXIT;
@@ -451,6 +453,10 @@ void RoomListProcess(ClientInfo* c)
 			c->state = STATE::ROOM;
 			return;
 		}
+		break;
+	case PROTOCOL::CREATEROOM:
+		UnPackPacket(c->recvbuf, temp);
+		CreateRoom(temp);
 		break;
 	case PROTOCOL::BACKPAGE:
 		c->state = STATE::MAINMENU;

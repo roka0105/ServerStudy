@@ -151,6 +151,19 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				break;
 			}
 			break;
+		case STATE::CREATEROOM:
+			size = PackPacket(Client->sendbuf, PROTOCOL::CREATEROOM, buf);
+			retval = send(Client->sock, Client->sendbuf, size, 0);
+			if (retval == SOCKET_ERROR)
+			{
+				err_display((char*)"send()");
+				Client->state == STATE::EXIT;
+			}
+			Client->state = STATE::ROOMLIST;
+			Client->protocol = PROTOCOL::ROOMINFO;
+			break;
+		case STATE::REROOMLISTINFO:
+			break;
 		case STATE::GAMESTART:
 			size = PackPacket(Client->sendbuf, PROTOCOL::STARTGAME, Client->game_number);
 			retval = send(Client->sock, Client->sendbuf, size, 0);

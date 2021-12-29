@@ -47,6 +47,8 @@ enum class PROTOCOL
 	ROOMRESULT,
 	CHECKSTARTGAME,
 	STARTGAME,
+	CREATEROOM,
+	REROOMLISTINFO,
 	END,
 	EXIT,
 	MAX
@@ -59,6 +61,8 @@ enum class STATE
 	JOIN,
 	ROOMLIST,
 	ROOM,
+	CREATEROOM,
+	REROOMLISTINFO,
 	GAMESTART,
 	BACKPAGE,
 	LOGOUT,
@@ -133,6 +137,7 @@ PROTOCOL GetProtocol(char* recvbuf);
 int PackPacket(char* sendbuf, const PROTOCOL protocol, const int number);
 int PackPacket(char* sendbuf, const PROTOCOL protocol, const char* id, const char* pw, const char* nickname);
 int PackPacket(char* sendbuf, const PROTOCOL protocol);
+int PackPacket(char* sendbuf, const PROTOCOL protocol, const char* roomname);
 void UnPackPacket(const char* recvbuf, MSGTYPE* msgtype, char* msg);
 void UnPackPacket(const char* recvbuf, int& roomcount, int& limitattendcount, RoomInfo* roomlist,UserInfo* userinfo);
 
@@ -146,13 +151,14 @@ INT_PTR CALLBACK DlgProc2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);//
 INT_PTR CALLBACK DlgProc3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);//회원가입
 INT_PTR CALLBACK DlgProc4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);//방 리스트
 INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);//방 입장
+INT_PTR CALLBACK DlgProc6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);//방생성
 #ifdef  MAIN
 ClientInfo* Client;
 HANDLE hThread[2];
 HANDLE hWriteEvent, hReadEvent, hWaitEvent;
 int MenuSelect = 0,Roomindex=0;
 char buf[MAXBUF], buf2[MAXBUF], buf3[MAXBUF],buf4[MAXBUF];
-HWND hErrStr, _hDlg,hLogOutBtn,hList, hUserinfo_nick,hEdit1, hBtn[LIMITNUM],hOkBtn;
+HWND hErrStr, _hDlg,hLogOutBtn,hList, hUserinfo_nick,hEdit1, hBtn[LIMITNUM],hOkBtn, hRoomname;
 HINSTANCE hInst;
 RoomInfo roominfo[MAXBUF];
 int Roomcount, LimitAttend;
@@ -163,7 +169,7 @@ extern HANDLE hWriteEvent, hReadEvent,hWaitEvent;
 extern int MenuSelect,Roomindex;
 extern HINSTANCE hInst;
 extern char buf[MAXBUF], buf2[MAXBUF], buf3[MAXBUF],buf4[MAXBUF];
-extern HWND hErrStr,_hDlg, hLogOutBtn, hList,hUserinfo_nick, hEdit1,hBtn[LIMITNUM], hOkBtn;
+extern HWND hErrStr,_hDlg, hLogOutBtn, hList,hUserinfo_nick, hEdit1,hBtn[LIMITNUM], hOkBtn, hRoomname;
 extern RoomInfo roominfo[MAXBUF];
 extern int Roomcount, LimitAttend;
 #endif

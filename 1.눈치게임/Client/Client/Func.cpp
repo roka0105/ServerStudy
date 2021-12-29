@@ -194,6 +194,16 @@ INT_PTR CALLBACK DlgProc4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 			EnableWindow(hOkBtn, TRUE);
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
+		case IDC_CREATEROOM:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6), NULL, DlgProc6);
+			break;
+		case IDC_REROOMLIST:
+			EndDialog(hDlg, IDC_REROOMLIST);
+			Client->state = STATE::ROOMLIST;
+			Client->protocol = PROTOCOL::ROOMINFO;
+			SetEvent(hWriteEvent);
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG4), NULL, DlgProc4);
+			break;
 		}
 		return FALSE;
 	case WM_CLOSE:
@@ -306,6 +316,34 @@ INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 		SetEvent(hWriteEvent);
 		EndDialog(hDlg, WM_CLOSE);
 		DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG4), NULL, DlgProc4);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+INT_PTR CALLBACK DlgProc6(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹æ»ý¼º
+{
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			Client->state = STATE::CREATEROOM;
+		    hRoomname = GetDlgItem(hDlg, IDC_ROOMNAME);
+			GetWindowText(hRoomname,buf, MAXBUF);
+			SetEvent(hWriteEvent);
+			EndDialog(hDlg, IDOK);
+			return TRUE;
+		case IDCANCEL:
+			EndDialog(hDlg, IDCANCEL);
+			return TRUE;
+		}
+		return FALSE;
+	case WM_CLOSE:
+		EndDialog(hDlg, WM_CLOSE);
 		return TRUE;
 	}
 	return FALSE;

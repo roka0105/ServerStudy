@@ -144,3 +144,12 @@ void UnPackPacket(const char* recvbuf, char* id, char* pw, char* nickname)
 	ptr += sizeof(int);
 	memcpy(nickname, ptr, strsize);
 }
+void UnPackPacket(const char* recvbuf, char* roomname)
+{
+	const char* ptr = recvbuf + sizeof(PROTOCOL);
+	int strsize = 0;
+	memcpy(&strsize, ptr, sizeof(int));
+	ptr += sizeof(int);
+	memcpy(roomname, ptr, strsize);
+	ptr += strsize;
+}

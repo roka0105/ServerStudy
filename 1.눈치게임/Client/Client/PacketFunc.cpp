@@ -79,6 +79,25 @@ int PackPacket(char* sendbuf, const PROTOCOL protocol)
 	size += sizeof(int);
 	return size;
 }
+int PackPacket(char* sendbuf, const PROTOCOL protocol, const char* roomname)
+{
+	int strsize = 0;
+	int size = 0;
+	char* ptr = sendbuf + sizeof(int);
+	memcpy(ptr, &protocol, sizeof(PROTOCOL));
+	ptr += sizeof(PROTOCOL);
+	size += sizeof(PROTOCOL);
+	strsize = strlen(roomname);
+	memcpy(ptr, &strsize, sizeof(int));
+	ptr += sizeof(int);
+	size += sizeof(int);
+	memcpy(ptr, roomname, strsize);
+	ptr = sendbuf;
+	size += strsize;
+	memcpy(ptr, &size,sizeof(int));
+	size += sizeof(int);
+	return size;
+}
 void UnPackPacket(const char* recvbuf, MSGTYPE* msgtype, char* msg)
 {
 	int strsize = 0;
