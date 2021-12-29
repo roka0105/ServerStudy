@@ -34,6 +34,7 @@ int main(int argv, char* argc[])
 			continue;
 		} 
 		client->hWaitEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		client->hEndEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		if (client->hWaitEvent == NULL)
 		{
 			RemoveClient(client);

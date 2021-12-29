@@ -28,6 +28,7 @@
 #define SUCCESSNUMBER_MSG "당신은 눈치게임에서 승리하셨습니다\r\n"
 #define FAIMENUMBER_MSG "당신은 눈치게임에서 패배하셨습니다\r\n"
 #define GAMERESULT_MSG "눈치게임 생존실패자 명단(%d입력):"
+#define WRONG_MSG  "순차적인 숫자로 다시 입력하세요\r\n"
 enum class MENUNUMBER
 {
 	NONE=-1,
@@ -54,6 +55,7 @@ enum class MSGTYPE
 	WAITROOM,
 	GAMENUMBER,
 	GAMERESULT,
+	WRONGNUMBER,
 	MAX
 };
 enum class PROTOCOL
@@ -70,6 +72,7 @@ enum class PROTOCOL
 	ROOMRESULT,
 	CHECKSTARTGAME,
 	STARTGAME,
+	END,
 	EXIT,
 	MAX
 };
@@ -85,6 +88,7 @@ enum class STATE
 	BACKPAGE,
 	LOGOUT,
 	END,
+	END2,//아직 입력하지 않은 클라에 대한 흐름 제어를 위함.
 	EXIT,
 	MAX
 };
@@ -116,7 +120,7 @@ typedef struct ClientInfo
 	UserInfo* user;
 	RoomInfo* room;
 	int game_number;
-	HANDLE hWaitEvent;
+	HANDLE hWaitEvent,hEndEvent;
 };
 typedef struct GameInfo
 {
@@ -126,6 +130,7 @@ typedef struct GameInfo
 	float end_time;
 	char lose_name[LIMITNUM][MAXBUF];
 	int lose_count;
+	bool sametime_check;
 };
 typedef struct RoomInfo
 {
@@ -171,6 +176,9 @@ bool JoinCheck(ClientInfo* c, UserInfo* userinfo);
 char* RandomRoom_Setname(); 
 void InitRoom();
 bool CheckInRoom(ClientInfo* c,int roomindex);
+void RemoveRoom(RoomInfo* room);
+void CreateRoom(char* roomname);
+void SendGameNumber(ClientInfo* c);
 
 void MenuProcess(ClientInfo* c);
 void LoginProcess(ClientInfo* c);
@@ -193,6 +201,7 @@ int UserCount = 0;
 HANDLE hThread;
 char* Roomname[LIMITNUM];
 GameInfo* game;
+int waitcount=0;
 #else
 extern CRITICAL_SECTION cs;
 extern RoomInfo* Room[MAXNUM];
@@ -204,4 +213,5 @@ extern int UserCount;
 extern HANDLE hThread;
 extern char* Roomname[LIMITNUM];
 extern GameInfo* game;
+extern int waitcount;
 #endif

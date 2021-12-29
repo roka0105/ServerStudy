@@ -243,6 +243,13 @@ INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 			SetEvent(hWriteEvent);
 			return TRUE;
 		case IDCANCEL:
+			if (Client->state == STATE::END)
+			{
+				Client->state = STATE::MAINMENU;
+				SetEvent(hReadEvent);
+				EndDialog(hDlg, IDCANCEL);
+				return TRUE;
+			}
 			Client->state = STATE::BACKPAGE;
 			Client->protocol = PROTOCOL::ROOMINFO;
 			SetEvent(hWriteEvent);
@@ -252,6 +259,13 @@ INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 		}
 		return FALSE;
 	case WM_CLOSE:
+		if (Client->state == STATE::END)
+		{
+			Client->state = STATE::MAINMENU;	
+			SetEvent(hReadEvent);
+			EndDialog(hDlg, WM_CLOSE);
+			return TRUE;
+		}
 		Client->state = STATE::BACKPAGE;
 		Client->protocol = PROTOCOL::ROOMINFO;
 		SetEvent(hWriteEvent);

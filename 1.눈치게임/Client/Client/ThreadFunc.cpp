@@ -69,7 +69,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				Client->state = STATE::ROOMLIST;
 				break;
 			case 4:
-				Client->state = STATE::ROOM;
+				Client->state = STATE::END;
 				break;
 			}
 			break;
@@ -174,7 +174,14 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				Client->state = STATE::EXIT;
 			}
 			break;
-		case STATE::END:
+		case STATE::END2:
+			size = PackPacket(Client->sendbuf, PROTOCOL::END);
+			retval = send(Client->sock, Client->sendbuf, size, 0);
+			if (retval == SOCKET_ERROR)
+			{
+				err_display((char*)"send()");
+			}
+			Client->state = STATE::END;
 			break;
 		case STATE::EXIT:
 			size = PackPacket(Client->sendbuf, PROTOCOL::EXIT);
@@ -290,10 +297,22 @@ DWORD CALLBACK RecvThread(LPVOID arg)
 				SendMessage(hEdit1, EM_REPLACESEL, 0, (LPARAM)buf4);
 				break;
 			case MSGTYPE::GAMENUMBER:
+				//SetWindowText(hEdit1, (LPCSTR)buf4);
 				SendMessage(hEdit1, EM_REPLACESEL, 0, (LPARAM)buf4);
+				break;
+			case MSGTYPE::WRONGNUMBER:
+				SendMessage(hEdit1, EM_REPLACESEL, 0, (LPARAM)buf4);
+				Client->state = STATE::GAMESTART;
+				for (int i = 0; i < LIMITNUM; ++i)
+				{
+					EnableWindow(hBtn[i], TRUE);
+				}
 				break;
 			case MSGTYPE::GAMERESULT:
 				SendMessage(hEdit1, EM_REPLACESEL, 0, (LPARAM)buf4);
+				for(int i=0;i<LIMITNUM;++i)
+				EnableWindow(hBtn[i], FALSE);
+				Client->state = STATE::END;
 				break;
 			}
 			ZeroMemory(buf4, MAXBUF);
@@ -308,6 +327,10 @@ DWORD CALLBACK RecvThread(LPVOID arg)
 				SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)temp);
 			}
 			SetWindowText(hUserinfo_nick, Client->user->NICK);
+			break;
+		case PROTOCOL::END:
+			Client->state = STATE::END2;
+			SetEvent(hWriteEvent);
 			break;
 		case PROTOCOL::EXIT:
 			endflag = true;

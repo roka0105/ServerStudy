@@ -29,6 +29,40 @@ void RemoveClient(ClientInfo* c)
 	}
 	LeaveCriticalSection(&cs);
 }
+void RemoveRoom(RoomInfo* room)
+{
+	char temp[MAXBUF];
+	ZeroMemory(temp, MAXBUF);
+	EnterCriticalSection(&cs);
+	for (int i = 0; i < RoomCount; ++i)
+	{
+		if (Room[i] == room)
+		{
+			delete room;
+			for (int j = i; j < RoomCount - 1; ++j)
+			{
+				Room[j] = Room[j + 1];
+				char* name = strtok(Room[j]->name, ".");
+				name = strtok(NULL, name);
+				sprintf(temp, "%d.", j + 1);
+				strcat(temp, name);
+				strcpy(Room[j]->name, temp);
+			}
+			--RoomCount;
+			break;
+		}
+	}
+	LeaveCriticalSection(&cs);
+}
+void CreateRoom(char* roomname)
+{
+	EnterCriticalSection(&cs);
+	RoomInfo* room = new RoomInfo();
+	strcpy(room->name, roomname);
+	Room[RoomCount] = room;
+	++RoomCount;
+	LeaveCriticalSection(&cs);
+}
 void AddUser(UserInfo* u)
 {
 	EnterCriticalSection(&cs);
@@ -163,6 +197,27 @@ bool CheckInRoom(ClientInfo*, int roomindex)
 		return true;
 	}
 	else return false;
+}
+void SendGameNumber(ClientInfo* c)
+{
+	int size = 0;
+	int retval = 0;
+	char temp[MAXBUF];
+	char buf[MAXBUF];
+	ZeroMemory(temp, MAXBUF);
+	ZeroMemory(buf, MAXBUF);
+	strcpy(temp, GAMENUMBER_MSG);
+	sprintf(buf, temp, c->user->NICK, game->game_number);
+	for (int i = 0; i < c->room->attend_count; ++i)
+	{
+		size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
+		retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+		if (retval == SOCKET_ERROR)
+		{
+			c->state = STATE::EXIT;
+			return;
+		}
+	}
 }
 void MenuProcess(ClientInfo* c)
 {
@@ -374,8 +429,16 @@ void RoomProcess(ClientInfo* c)
 		//	return;
 		//	break;
 	case PROTOCOL::CHECKSTARTGAME:
+		if (game != NULL)
+		{
+			ZeroMemory(game, sizeof(GameInfo));
+			delete(game);
+		}
 		if (c->room->attend_count == LIMITNUM)
 		{
+			if (game == NULL)
+				game = new GameInfo();
+
 			for (int i = 0; i < LIMITNUM; ++i)
 			{
 				ClientInfo* client = c->room->client[i];
@@ -393,9 +456,6 @@ void RoomProcess(ClientInfo* c)
 		}
 		else
 		{
-			if (game == NULL)
-				game = new GameInfo();
-
 			size = PackPacket(c->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::WAITROOM, WAITGAME_MSG);
 			retval = send(c->sock, c->sendbuf, size, 0);
 			if (retval == SOCKET_ERROR)
@@ -406,24 +466,22 @@ void RoomProcess(ClientInfo* c)
 			return;
 		}
 		break;
-	case PROTOCOL::BACKPAGE:
-		//방 나가기.	
-		c->room->attend_count--;
-		EnterCriticalSection(&cs);
-		for (int i = 0; i < c->room->attend_count + 1; ++i)
-		{
-			if (c->room->client[i] == c)
-			{
-				c->room->client[i] = NULL;
-				c->room = NULL;
-				break;
-			}
-		}
-
-		LeaveCriticalSection(&cs);
-		c->state = STATE::ROOMLIST;
-
-		return;
+		//case PROTOCOL::BACKPAGE:
+		//	//방 나가기.	
+		//	EnterCriticalSection(&cs);
+		//	c->room->attend_count--;
+		//	for (int i = 0; i < c->room->attend_count + 1; ++i)
+		//	{
+		//		if (c->room->client[i] == c)
+		//		{
+		//			c->room->client[i] = NULL;
+		//			c->room = NULL;
+		//			break;
+		//		}
+		//	}
+		//	LeaveCriticalSection(&cs);
+		//	c->state = STATE::ROOMLIST;
+		//	return;
 	}
 }
 void GameStartProcess(ClientInfo* c)
@@ -434,17 +492,6 @@ void GameStartProcess(ClientInfo* c)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
-	if (game->befor_client!=NULL&&game->befor_client->game_number == LIMITNUM - 1)
-	{
-		strcpy(game->lose_name[game->lose_count], c->user->NICK);
-		++game->lose_count;
-		for (int i = 0; i < c->room->attend_count; ++i)
-		{
-			SetEvent(c->room->client[i]->hWaitEvent);
-		}
-		c->state = STATE::END;
-		return;
-	}
 	if (!RecvPacket(c->sock, c->recvbuf))
 	{
 		c->state = STATE::EXIT;
@@ -456,60 +503,193 @@ void GameStartProcess(ClientInfo* c)
 	case PROTOCOL::STARTGAME:
 		//클라에서 입력한 버튼값으로 판단
 		UnPackPacket(c->recvbuf, c->game_number);
+		//순차적 입력이 아닐시 (생각해보니까 이것도 패배처리하는게 맞을듯.)
+		/*if (c->game_number != game->game_number + 1)
+		{
+			size = PackPacket(c->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::WRONGNUMBER, WRONG_MSG);
+			retval = send(c->sock, c->sendbuf, size, 0);
+			if (retval == SOCKET_ERROR)
+			{
+				err_display((char*)"wrong msg send err()");
+			}
+			return;
+		}*/
 		if (game->start_time != 0)
 		{
-			game->end_time = time(NULL);
+			game->end_time = clock();
 		}
-		//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같다면
+		EnterCriticalSection(&cs);
+		//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같거나 작거나 순차적 입력이 아닐경우(값이 큰경우)
 		if (game->befor_client != NULL)
 		{
-			if (c->game_number <= game->befor_client->game_number)
+			if (c->game_number <= game->befor_client->game_number || c->game_number > game->befor_client->game_number + 1)
 			{
+				game->game_number = c->game_number;
+				float time = (game->end_time - game->start_time) / CLOCKS_PER_SEC;
 				//일정 시간 안에 둘의 입력이 겹쳤다면(둘다 탈락으로 체크)
-				if ((game->end_time - game->start_time) <= LIMITTIME)
+				if (time <= LIMITTIME&&c->game_number==game->befor_client->game_number)
 				{
+					if (!game->sametime_check)
+					{
+						strcpy(game->lose_name[0], game->befor_client->user->NICK);
+						game->lose_count = 1;
+						game->sametime_check = true;
+					}
 					strcpy(game->lose_name[game->lose_count], c->user->NICK);
 					++game->lose_count;
+					SendGameNumber(c);
+					//아직 입력하지 않은 클라에 대한 게임 종료 처리
+					for (int i = 0; i < c->room->attend_count; ++i)
+					{
+						if (c->room->client[i]->game_number == 0)
+						{
+							size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+							retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+							if (retval == SOCKET_ERROR)
+							{
+								c->state = STATE::EXIT;
+								LeaveCriticalSection(&cs);
+								return;
+							}
+						}
+					}
 					for (int i = 0; i < c->room->attend_count; ++i)
 					{
 						SetEvent(c->room->client[i]->hWaitEvent);
 					}
 					c->state = STATE::END;
+					LeaveCriticalSection(&cs);
 					return;
 				}
-
+				//시간 지나고 이전 입력값보다 작거나 같은 숫자 입력 시 
+				else if (game->game_number <= c->game_number)
+				{
+					++game->lose_count;
+					game->game_number = c->game_number;
+					strcpy(game->lose_name[0], c->user->NICK);
+					SendGameNumber(c);
+					//아직 입력하지 않은 클라에 대한 게임 종료 처리
+					for (int i = 0; i < c->room->attend_count; ++i)
+					{
+						if (c->room->client[i]->game_number == 0)
+						{
+							size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+							retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+							if (retval == SOCKET_ERROR)
+							{
+								c->state = STATE::EXIT;
+								LeaveCriticalSection(&cs);
+								return;
+							}
+						}
+					}
+					for (int i = 0; i < c->room->attend_count; ++i)
+					{
+						SetEvent(c->room->client[i]->hWaitEvent);
+					}
+					c->state = STATE::END;
+					LeaveCriticalSection(&cs);
+					return;
+				}
+				//순차적 입력이 아닌 큰값 입력시
+				++game->lose_count;
 				strcpy(game->lose_name[0], c->user->NICK);
+				//아직 입력하지 않은 클라에 대한 게임 종료 처리
+				for (int i = 0; i < c->room->attend_count; ++i)
+				{
+					if (c->room->client[i]->game_number == 0)
+					{
+						size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+						retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+						if (retval == SOCKET_ERROR)
+						{
+							c->state = STATE::EXIT;
+							LeaveCriticalSection(&cs);
+							return;
+						}
+					}
+				}
 				for (int i = 0; i < c->room->attend_count; ++i)
 				{
 					SetEvent(c->room->client[i]->hWaitEvent);
 				}
 				c->state = STATE::END;
+				LeaveCriticalSection(&cs);
 				return;
 			}
+			//이전숫자가 마지막 생존 숫자였다면 남은 클라는 자동 탈락
+			else if (c->game_number == LIMITNUM - 1)
+			{
+				for (int i = 0; i < c->room->attend_count; ++i)
+				{
+					if (c->room->client[i]->game_number == 0)
+					{
+						++game->lose_count;
+						game->game_number = LIMITNUM;
+						strcpy(game->lose_name[0], c->room->client[i]->user->NICK);
+						SendGameNumber(c);
+						size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+						retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+						if (retval == SOCKET_ERROR)
+						{
+							c->state = STATE::EXIT;
+							LeaveCriticalSection(&cs);
+							return;
+						}
+						break;
+					}
+				}
+				for (int i = 0; i < c->room->attend_count; ++i)
+				{
+					SetEvent(c->room->client[i]->hWaitEvent);
+				}
+				c->state = STATE::END;
+				LeaveCriticalSection(&cs);
+				return;
+			}
+			
 		}
+
 		//탈락이 아닐 시
 		game->befor_client = c;
 		game->game_number = c->game_number;
-		game->start_time = time(NULL);
-		strcpy(temp, GAMENUMBER_MSG);
-		sprintf(buf, temp, c->user->NICK, game->game_number);
-		for (int i = 0; i < c->room->attend_count; ++i)
+		game->start_time = clock();
+		LeaveCriticalSection(&cs);
+		SendGameNumber(c);
+		/*for (int i = 0; i < c->room->attend_count; ++i)
 		{
 			size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
- 			retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+			retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
 			if (retval == SOCKET_ERROR)
 			{
 				c->state = STATE::EXIT;
 				return;
 			}
-		}
+		}*/
+	
 		WaitForSingleObject(c->hWaitEvent, INFINITE);
-		printf("버그추천\n");
+		//printf("웨이트 풀림\n");
 		c->state = STATE::END;
 		return;
 		break;
+	case PROTOCOL::END:
+		c->state = STATE::END;
+		break;
 	case PROTOCOL::BACKPAGE:
-
+		EnterCriticalSection(&cs);
+		c->room->attend_count--;
+		for (int i = 0; i < c->room->attend_count + 1; ++i)
+		{
+			if (c->room->client[i] == c)
+			{
+				c->room->client[i] = NULL;
+				c->room = NULL;
+				break;
+			}
+		}
+		LeaveCriticalSection(&cs);
+		c->state = STATE::ROOMLIST;
+		return;
 		break;
 	}
 }
@@ -518,21 +698,29 @@ void EndProcess(ClientInfo* c)
 	int size = 0;
 	int retval = 0;
 	char temp[MAXBUF];
+	char buf[MAXBUF];
+	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
-
+	EnterCriticalSection(&cs);
 	for (int i = 0; i < game->lose_count; ++i)
 	{
 		if (!strcmp(c->user->NICK, game->lose_name[i]))
 		{
 			strcpy(temp, FAIMENUMBER_MSG);
+			break;
 		}
 		else strcpy(temp, SUCCESSNUMBER_MSG);
-		sprintf(temp, GAMERESULT_MSG, game->game_number);
 
+	}
+	sprintf(buf, GAMERESULT_MSG, game->game_number);
+	strcat(temp, buf);
+	for (int i = 0; i < game->lose_count; ++i)
+	{
 		strcat(temp, game->lose_name[i]);
 		if (i != game->lose_count - 1)
 			strcat(temp, ",");
 	}
+	LeaveCriticalSection(&cs);
 	strcat(temp, "\r\n");
 	//클라에 종료메세지 보내기
 	size = PackPacket(c->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMERESULT, temp);
@@ -542,8 +730,19 @@ void EndProcess(ClientInfo* c)
 		c->state = STATE::EXIT;
 		return;
 	}
-	ZeroMemory(game, sizeof(GameInfo));
-	delete(game);
+	++waitcount;
+	if (waitcount == LIMITNUM)
+	{
+		for (int i = 0; i < LIMITNUM; ++i)
+		{
+			SetEvent(c->room->client[i]->hEndEvent);
+		}
+	}
+	WaitForSingleObject(c->hEndEvent, INFINITE);
+	if (c->room != NULL && c == c->room->client[LIMITNUM - 1])
+	{
+		RemoveRoom(c->room);
+	}
 	c->state = STATE::MAINMENU;
 	return;
 }

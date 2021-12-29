@@ -30,6 +30,7 @@ enum class MSGTYPE
 	WAITROOM,
 	GAMENUMBER,
 	GAMERESULT,
+	WRONGNUMBER,
 	MAX
 };
 enum class PROTOCOL
@@ -46,6 +47,7 @@ enum class PROTOCOL
 	ROOMRESULT,
 	CHECKSTARTGAME,
 	STARTGAME,
+	END,
 	EXIT,
 	MAX
 };
@@ -61,6 +63,7 @@ enum class STATE
 	BACKPAGE,
 	LOGOUT,
 	END,
+	END2,//아직 입력하지 않은 클라에 대한 흐름 제어를 위함.
 	EXIT,
 	MAX
 };
@@ -101,7 +104,7 @@ typedef struct ClientInfo
 	UserInfo* user;
 	RoomInfo* room;
 	int game_number;
-	HANDLE hWaitEvent;
+	HANDLE hWaitEvent, hEndEvent;
 };
 typedef struct GameInfo
 {
@@ -111,6 +114,7 @@ typedef struct GameInfo
 	float end_time;
 	char lose_name[LIMITNUM][MAXBUF];
 	int lose_count;
+	bool sametime_check;
 };
 typedef struct RoomInfo
 {
