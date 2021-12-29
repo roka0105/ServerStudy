@@ -149,7 +149,7 @@ void InitRoom()
 	{
 		Room[i] = new RoomInfo();
 		Room[i]->attend_count = 0;
-		sprintf(Room[i]->name, "%d.%s", i + 1, RandomRoom_Setname());
+		sprintf(Room[i]->name, "%s",RandomRoom_Setname());
 		Room[i]->number = i + 1;
 	}
 }

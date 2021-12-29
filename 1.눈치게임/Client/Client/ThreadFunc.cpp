@@ -340,7 +340,8 @@ DWORD CALLBACK RecvThread(LPVOID arg)
 			ZeroMemory(temp, MAXBUF);
 			for (int i = 0; i < Roomcount; ++i)
 			{
-				sprintf(temp, "%s (%d/%d)", roominfo[i].name, roominfo[i].attend_count, LIMITNUM);
+				SendMessage(hList, LB_DELETESTRING, i, (LPARAM)"");
+				sprintf(temp, "%d.%s (%d/%d)",i+1,roominfo[i].name, roominfo[i].attend_count, LIMITNUM);
 				SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)temp);
 			}
 			SetWindowText(hUserinfo_nick, Client->user->NICK);
