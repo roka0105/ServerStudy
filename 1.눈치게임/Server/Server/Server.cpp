@@ -46,6 +46,7 @@ int main(int argv, char* argc[])
 			RemoveClient(client);
 		else CloseHandle(hThread);
 	}
+	UserLogOut(true);
 	DeleteCriticalSection(&cs);
 	closesocket(listensocket);
 	WSACleanup();

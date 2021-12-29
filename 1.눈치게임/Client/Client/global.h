@@ -151,7 +151,7 @@ HANDLE hThread[2];
 HANDLE hWriteEvent, hReadEvent, hWaitEvent;
 int MenuSelect = 0,Roomindex=0;
 char buf[MAXBUF], buf2[MAXBUF], buf3[MAXBUF],buf4[MAXBUF];
-HWND hErrStr, _hDlg,hLogOutBtn,hList, hUserinfo_nick,hEdit1, hBtn[LIMITNUM];
+HWND hErrStr, _hDlg,hLogOutBtn,hList, hUserinfo_nick,hEdit1, hBtn[LIMITNUM],hOkBtn;
 HINSTANCE hInst;
 RoomInfo roominfo[MAXBUF];
 int Roomcount, LimitAttend;
@@ -162,7 +162,7 @@ extern HANDLE hWriteEvent, hReadEvent,hWaitEvent;
 extern int MenuSelect,Roomindex;
 extern HINSTANCE hInst;
 extern char buf[MAXBUF], buf2[MAXBUF], buf3[MAXBUF],buf4[MAXBUF];
-extern HWND hErrStr,_hDlg, hLogOutBtn, hList,hUserinfo_nick, hEdit1,hBtn[LIMITNUM];
+extern HWND hErrStr,_hDlg, hLogOutBtn, hList,hUserinfo_nick, hEdit1,hBtn[LIMITNUM], hOkBtn;
 extern RoomInfo roominfo[MAXBUF];
 extern int Roomcount, LimitAttend;
 #endif

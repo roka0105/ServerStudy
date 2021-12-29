@@ -5,6 +5,7 @@ INT_PTR CALLBACK DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¸
 	{
 	case WM_INITDIALOG:
 		hLogOutBtn = GetDlgItem(hDlg, IDC_LOGOUT);
+		hOkBtn = GetDlgItem(hDlg, IDC_OK);
 		EnableWindow(hLogOutBtn, FALSE);
 		CheckDlgButton(hDlg, IDC_LOGIN, BST_UNCHECKED);
 		return TRUE;
@@ -72,6 +73,9 @@ INT_PTR CALLBACK DlgProc2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//·
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
+		//¸ÞÀÎ¸Þ´º ok¹öÆ° false,·Î±×¾Æ¿ô ¹öÆ° false
+		EnableWindow(hLogOutBtn, FALSE);
+		EnableWindow(hOkBtn, FALSE);
 		hErrStr = GetDlgItem(hDlg, IDC_ERR);
 		_hDlg = hDlg;
 		return TRUE;
@@ -88,15 +92,21 @@ INT_PTR CALLBACK DlgProc2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//·
 			SetDlgItemText(hDlg, IDC_PW, "");
 			return TRUE;
 		case IDCANCEL:
-			//Client->state = STATE::BACKPAGE;
-			//SetEvent(hWriteEvent);
+			Client->state = STATE::BACKPAGE;
+			SetEvent(hWriteEvent);
+			if(Client->user->loging)
+				EnableWindow(hLogOutBtn, TRUE);
+			EnableWindow(hOkBtn, TRUE);
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
 		return FALSE;
 	case WM_CLOSE:
-		Client->state = STATE::EXIT;
+		Client->state = STATE::BACKPAGE;
 		SetEvent(hWriteEvent);
+		if (Client->user->loging)
+			EnableWindow(hLogOutBtn, TRUE);
+		EnableWindow(hOkBtn, TRUE);
 		EndDialog(hDlg, WM_CLOSE);
 		return TRUE;
 	}
@@ -107,6 +117,8 @@ INT_PTR CALLBACK DlgProc3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//È
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
+		EnableWindow(hLogOutBtn, FALSE);
+		EnableWindow(hOkBtn, FALSE);
 		hErrStr = GetDlgItem(hDlg, IDC_ERR);
 		_hDlg = hDlg;
 		return TRUE;
@@ -126,13 +138,21 @@ INT_PTR CALLBACK DlgProc3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//È
 		case IDCANCEL:
 			//Client->state = STATE::BACKPAGE;
 			//SetEvent(hWriteEvent);
+			Client->state = STATE::BACKPAGE;
+			SetEvent(hWriteEvent);
+			if (Client->user->loging)
+				EnableWindow(hLogOutBtn, TRUE);
+			EnableWindow(hOkBtn, TRUE);
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
 		return FALSE;
 	case WM_CLOSE:
-		Client->state = STATE::EXIT;
+		Client->state = STATE::BACKPAGE;
 		SetEvent(hWriteEvent);
+		if (Client->user->loging)
+			EnableWindow(hLogOutBtn, TRUE);
+		EnableWindow(hOkBtn, TRUE);
 		EndDialog(hDlg, WM_CLOSE);
 		return TRUE;
 	}
@@ -143,6 +163,8 @@ INT_PTR CALLBACK DlgProc4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
+		EnableWindow(hLogOutBtn, FALSE);
+		EnableWindow(hOkBtn, FALSE);
 		hList = GetDlgItem(hDlg, IDC_ROOMLIST);
 		hUserinfo_nick = GetDlgItem(hDlg, IDC_NICKNAME);
 		_hDlg = hDlg;
@@ -167,13 +189,20 @@ INT_PTR CALLBACK DlgProc4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 			Client->state = STATE::BACKPAGE;
 			Client->protocol = PROTOCOL::ROOMINFO;
 			SetEvent(hWriteEvent);
+			if (Client->user->loging)
+				EnableWindow(hLogOutBtn, TRUE);
+			EnableWindow(hOkBtn, TRUE);
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
 		return FALSE;
 	case WM_CLOSE:
-		Client->state = STATE::EXIT;
+		Client->state = STATE::BACKPAGE;
+		Client->protocol = PROTOCOL::ROOMINFO;
 		SetEvent(hWriteEvent);
+		if (Client->user->loging)
+			EnableWindow(hLogOutBtn, TRUE);
+		EnableWindow(hOkBtn, TRUE);
 		EndDialog(hDlg, WM_CLOSE);
 		return TRUE;
 	}
@@ -247,6 +276,9 @@ INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 			{
 				Client->state = STATE::MAINMENU;
 				SetEvent(hReadEvent);
+				if (Client->user->loging)
+					EnableWindow(hLogOutBtn, TRUE);
+				EnableWindow(hOkBtn, TRUE);
 				EndDialog(hDlg, IDCANCEL);
 				return TRUE;
 			}
@@ -263,6 +295,9 @@ INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 		{
 			Client->state = STATE::MAINMENU;	
 			SetEvent(hReadEvent);
+			if (Client->user->loging)
+				EnableWindow(hLogOutBtn, TRUE);
+			EnableWindow(hOkBtn, TRUE);
 			EndDialog(hDlg, WM_CLOSE);
 			return TRUE;
 		}

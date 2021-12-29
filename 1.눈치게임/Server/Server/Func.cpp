@@ -13,6 +13,13 @@ void RemoveClient(ClientInfo* c)
 {
 	EnterCriticalSection(&cs);
 	printf("[TCP서버종료] IP:%s PORT:%d\n", inet_ntoa(c->addr.sin_addr), ntohs(c->addr.sin_port));
+	for (int i = 0; i < UserCount; ++i)
+	{
+		if (!strcmp(c->user->ID, User[i]->ID))
+		{
+			User[i]->loging = false;
+		}
+	}
 	for (int i = 0; i < ClientCount; ++i)
 	{
 		if (Client[i] == c)
@@ -61,6 +68,25 @@ void CreateRoom(char* roomname)
 	strcpy(room->name, roomname);
 	Room[RoomCount] = room;
 	++RoomCount;
+	LeaveCriticalSection(&cs);
+}
+void UserLogOut(bool all,ClientInfo* c)
+{
+	EnterCriticalSection(&cs);
+	for (int i = 0; i < UserCount; ++i)
+	{
+		if (all)
+		{
+			User[i]->loging = false;
+	    }
+		else
+		{
+			if (c != NULL && !strcmp(c->user->ID, User[i]->ID))
+			{
+				User[i]->loging = false;
+			}
+		}
+	}
 	LeaveCriticalSection(&cs);
 }
 void AddUser(UserInfo* u)
@@ -325,7 +351,7 @@ void LoginProcess(ClientInfo* c)
 					break;
 				}
 			}
-			c->state = STATE::MAINMENU;
+			//c->state = STATE::MAINMENU;
 			return;
 		}
 		else
@@ -336,9 +362,6 @@ void LoginProcess(ClientInfo* c)
 		break;
 	case  PROTOCOL::BACKPAGE:
 		c->state = STATE::MAINMENU;
-		break;
-	case PROTOCOL::EXIT:
-		c->state = STATE::EXIT;
 		break;
 	}
 	return;
@@ -363,12 +386,15 @@ void JoinProcess(ClientInfo* c)
 			AddUser(userinfo);
 			//파일자동저장
 			FileSave();
-			c->state = STATE::MAINMENU;
+			//c->state = STATE::MAINMENU;
 		}
 		else
 		{
 			return;
 		}
+		break;
+	case PROTOCOL::BACKPAGE:
+		c->state = STATE::MAINMENU;
 		break;
 	}
 }
@@ -484,22 +510,22 @@ void RoomProcess(ClientInfo* c)
 			return;
 		}
 		break;
-		//case PROTOCOL::BACKPAGE:
-		//	//방 나가기.	
-		//	EnterCriticalSection(&cs);
-		//	c->room->attend_count--;
-		//	for (int i = 0; i < c->room->attend_count + 1; ++i)
-		//	{
-		//		if (c->room->client[i] == c)
-		//		{
-		//			c->room->client[i] = NULL;
-		//			c->room = NULL;
-		//			break;
-		//		}
-		//	}
-		//	LeaveCriticalSection(&cs);
-		//	c->state = STATE::ROOMLIST;
-		//	return;
+		case PROTOCOL::BACKPAGE:
+			//방 나가기.	
+			EnterCriticalSection(&cs);
+			c->room->attend_count--;
+			for (int i = 0; i < c->room->attend_count + 1; ++i)
+			{
+				if (c->room->client[i] == c)
+				{
+					c->room->client[i] = NULL;
+					c->room = NULL;
+					break;
+				}
+			}
+			LeaveCriticalSection(&cs);
+			c->state = STATE::ROOMLIST;
+			return;
 	}
 }
 //해당 프로세스에서 패배,승리 판단 기능 및 오류에 대한 수정에 대한 주석

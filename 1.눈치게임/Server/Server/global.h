@@ -180,6 +180,7 @@ bool CheckInRoom(ClientInfo* c,int roomindex);
 void RemoveRoom(RoomInfo* room);
 void CreateRoom(char* roomname);
 void SendGameNumber(ClientInfo* c);
+void UserLogOut(bool all=false, ClientInfo* c=NULL);
 
 void MenuProcess(ClientInfo* c);
 void LoginProcess(ClientInfo* c);

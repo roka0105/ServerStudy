@@ -166,6 +166,10 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			{
 				Client->state = STATE::ROOMLIST;
 			}
+			else 
+			{
+				Client->state = STATE::MAINMENU;
+			}
 			size = PackPacket(Client->sendbuf, PROTOCOL::BACKPAGE);
 			retval = send(Client->sock, Client->sendbuf, size, 0);
 			if (retval == SOCKET_ERROR)

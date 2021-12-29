@@ -30,6 +30,7 @@ DWORD CALLBACK ClientThread(LPVOID arg)
 			EndProcess(client);
 			break;
 		case STATE::EXIT:
+			UserLogOut(false,client);
 			ExitProcess(client);
 			RemoveClient(client);
 			endflag = true;
