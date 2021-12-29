@@ -6,6 +6,8 @@ DWORD CALLBACK ClientThread(LPVOID arg)
 	bool endflag = false;
 	while (1)
 	{
+		ZeroMemory(client->recvbuf, MAXBUF);
+		ZeroMemory(client->sendbuf, MAXBUF);
 		switch (client->state)
 		{
 		case STATE::MAINMENU:

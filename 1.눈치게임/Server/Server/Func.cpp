@@ -242,11 +242,11 @@ void SendGameNumber(ClientInfo* c)
 	ZeroMemory(temp, MAXBUF);
 	ZeroMemory(buf, MAXBUF);
 	strcpy(temp, GAMENUMBER_MSG);
-	sprintf(buf, temp, c->user->NICK, game->game_number);
+	sprintf(buf, temp, c->user->NICK, c->game_number);
 	for (int i = 0; i < c->room->attend_count; ++i)
 	{
 		size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
-		retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+ 		retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			c->state = STATE::EXIT;
@@ -476,7 +476,8 @@ void RoomProcess(ClientInfo* c)
 		if (game != NULL)
 		{
 			ZeroMemory(game, sizeof(GameInfo));
-			delete(game);
+			delete game;
+			game=NULL;
 		}
 		if (c->room->attend_count == LIMITNUM)
 		{
@@ -493,6 +494,7 @@ void RoomProcess(ClientInfo* c)
 				{
 					err_display((char*)"startgame send()");
 				}
+				SetEvent(client->hWaitEvent);
 				//client->state = STATE::GAMESTART;
 			}
 			c->state = STATE::GAMESTART;
@@ -572,6 +574,7 @@ void GameStartProcess(ClientInfo* c)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
+	WaitForSingleObject(c->hWaitEvent, INFINITE);
 	if (!RecvPacket(c->sock, c->recvbuf))
 	{
 		c->state = STATE::EXIT;
@@ -582,7 +585,7 @@ void GameStartProcess(ClientInfo* c)
 	{
 	case PROTOCOL::STARTGAME:
 		//클라에서 입력한 버튼값으로 판단
-		UnPackPacket(c->recvbuf, c->game_number);
+ 		UnPackPacket(c->recvbuf, c->game_number);
 		//순차적 입력이 아닐시 (생각해보니까 이것도 패배처리하는게 맞을듯.)
 		/*if (c->game_number != game->game_number + 1)
 		{
@@ -746,8 +749,6 @@ void GameStartProcess(ClientInfo* c)
 				return;
 			}
 		}*/
-	
-		WaitForSingleObject(c->hWaitEvent, INFINITE);
 		//printf("웨이트 풀림\n");
 		c->state = STATE::END;
 		return;
@@ -781,6 +782,7 @@ void EndProcess(ClientInfo* c)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
+	WaitForSingleObject(c->hWaitEvent, INFINITE);
 	EnterCriticalSection(&cs);
 	for (int i = 0; i < game->lose_count; ++i)
 	{
@@ -819,6 +821,7 @@ void EndProcess(ClientInfo* c)
 		}
 	}
 	WaitForSingleObject(c->hEndEvent, INFINITE);
+	waitcount = 0;
 	if (c->room != NULL && c == c->room->client[LIMITNUM - 1])
 	{
 		RemoveRoom(c->room);
