@@ -122,6 +122,7 @@ typedef struct RoomInfo
 	int attend_count;
 	ClientInfo* client[LIMITNUM];
 	char name[MAXBUF];
+	GameInfo* game;
 };
 void err_quit(char* msg);
 void err_display(char* msg);

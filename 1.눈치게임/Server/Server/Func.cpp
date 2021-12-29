@@ -45,6 +45,8 @@ void RemoveRoom(RoomInfo* room)
 	{
 		if (Room[i] == room)
 		{
+			room->game = NULL;
+			delete room->game;
 			delete room;
 			for (int j = i; j < RoomCount - 1; ++j)
 			{
@@ -473,16 +475,16 @@ void RoomProcess(ClientInfo* c)
 		//	return;
 		//	break;
 	case PROTOCOL::CHECKSTARTGAME:
-		if (game != NULL)
+		if (c->room->game != NULL)
 		{
-			ZeroMemory(game, sizeof(GameInfo));
-			delete game;
-			game=NULL;
+			ZeroMemory(c->room->game, sizeof(GameInfo));
+			delete c->room->game;
+			c->room->game=NULL;
 		}
 		if (c->room->attend_count == LIMITNUM)
 		{
-			if (game == NULL)
-				game = new GameInfo();
+			if (c->room->game == NULL)
+				c->room->game = new GameInfo();
 
 			for (int i = 0; i < LIMITNUM; ++i)
 			{
@@ -597,29 +599,29 @@ void GameStartProcess(ClientInfo* c)
 			}
 			return;
 		}*/
-		if (game->start_time != 0)
-		{
-			game->end_time = clock();
-		}
 		EnterCriticalSection(&cs);
-		//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같거나 작거나 순차적 입력이 아닐경우(값이 큰경우)
-		if (game->befor_client != NULL)
+		if (c->room->game->start_time != 0)
 		{
-			if (c->game_number <= game->befor_client->game_number || c->game_number > game->befor_client->game_number + 1)
+			c->room->game->end_time = clock();
+		}
+		//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같거나 작거나 순차적 입력이 아닐경우(값이 큰경우)
+		if (c->room->game->befor_client != NULL)
+		{
+			if (c->game_number <= c->room->game->befor_client->game_number || c->game_number > c->room->game->befor_client->game_number + 1)
 			{
-				game->game_number = c->game_number;
-				float time = (game->end_time - game->start_time) / CLOCKS_PER_SEC;
+				c->room->game->game_number = c->game_number;
+				float time = (c->room->game->end_time - c->room->game->start_time) / CLOCKS_PER_SEC;
 				//일정 시간 안에 둘의 입력이 겹쳤다면(둘다 탈락으로 체크)
-				if (time <= LIMITTIME&&c->game_number==game->befor_client->game_number)
+				if (time <= LIMITTIME&&c->game_number==c->room->game->befor_client->game_number)
 				{
-					if (!game->sametime_check)
+					if (!c->room->game->sametime_check)
 					{
-						strcpy(game->lose_name[0], game->befor_client->user->NICK);
-						game->lose_count = 1;
-						game->sametime_check = true;
+						strcpy(c->room->game->lose_name[0], c->room->game->befor_client->user->NICK);
+						c->room->game->lose_count = 1;
+						c->room->game->sametime_check = true;
 					}
-					strcpy(game->lose_name[game->lose_count], c->user->NICK);
-					++game->lose_count;
+					strcpy(c->room->game->lose_name[c->room->game->lose_count], c->user->NICK);
+					++c->room->game->lose_count;
 					SendGameNumber(c);
 					//아직 입력하지 않은 클라에 대한 게임 종료 처리
 					for (int i = 0; i < c->room->attend_count; ++i)
@@ -635,21 +637,17 @@ void GameStartProcess(ClientInfo* c)
 								return;
 							}
 						}
-					}
-					for (int i = 0; i < c->room->attend_count; ++i)
-					{
-						SetEvent(c->room->client[i]->hWaitEvent);
 					}
 					c->state = STATE::END;
 					LeaveCriticalSection(&cs);
 					return;
 				}
 				//시간 지나고 이전 입력값보다 작거나 같은 숫자 입력 시 
-				else if (game->game_number <= c->game_number)
+				else if (c->room->game->game_number <= c->game_number)
 				{
-					++game->lose_count;
-					game->game_number = c->game_number;
-					strcpy(game->lose_name[0], c->user->NICK);
+					++c->room->game->lose_count;
+					c->room->game->game_number = c->game_number;
+					strcpy(c->room->game->lose_name[0], c->user->NICK);
 					SendGameNumber(c);
 					//아직 입력하지 않은 클라에 대한 게임 종료 처리
 					for (int i = 0; i < c->room->attend_count; ++i)
@@ -666,17 +664,13 @@ void GameStartProcess(ClientInfo* c)
 							}
 						}
 					}
-					for (int i = 0; i < c->room->attend_count; ++i)
-					{
-						SetEvent(c->room->client[i]->hWaitEvent);
-					}
 					c->state = STATE::END;
 					LeaveCriticalSection(&cs);
 					return;
 				}
 				//순차적 입력이 아닌 큰값 입력시
-				++game->lose_count;
-				strcpy(game->lose_name[0], c->user->NICK);
+				++c->room->game->lose_count;
+				strcpy(c->room->game->lose_name[0], c->user->NICK);
 				//아직 입력하지 않은 클라에 대한 게임 종료 처리
 				for (int i = 0; i < c->room->attend_count; ++i)
 				{
@@ -692,10 +686,6 @@ void GameStartProcess(ClientInfo* c)
 						}
 					}
 				}
-				for (int i = 0; i < c->room->attend_count; ++i)
-				{
-					SetEvent(c->room->client[i]->hWaitEvent);
-				}
 				c->state = STATE::END;
 				LeaveCriticalSection(&cs);
 				return;
@@ -707,9 +697,9 @@ void GameStartProcess(ClientInfo* c)
 				{
 					if (c->room->client[i]->game_number == 0)
 					{
-						++game->lose_count;
-						game->game_number = LIMITNUM;
-						strcpy(game->lose_name[0], c->room->client[i]->user->NICK);
+						++c->room->game->lose_count;
+						c->room->game->game_number = LIMITNUM;
+						strcpy(c->room->game->lose_name[0], c->room->client[i]->user->NICK);
 						SendGameNumber(c);
 						size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
 						retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
@@ -722,21 +712,15 @@ void GameStartProcess(ClientInfo* c)
 						break;
 					}
 				}
-				for (int i = 0; i < c->room->attend_count; ++i)
-				{
-					SetEvent(c->room->client[i]->hWaitEvent);
-				}
 				c->state = STATE::END;
 				LeaveCriticalSection(&cs);
 				return;
 			}
-			
 		}
-
 		//탈락이 아닐 시
-		game->befor_client = c;
-		game->game_number = c->game_number;
-		game->start_time = clock();
+		c->room->game->befor_client = c;
+		c->room->game->game_number = c->game_number;
+		c->room->game->start_time = clock();
 		LeaveCriticalSection(&cs);
 		SendGameNumber(c);
 		/*for (int i = 0; i < c->room->attend_count; ++i)
@@ -755,6 +739,10 @@ void GameStartProcess(ClientInfo* c)
 		break;
 	case PROTOCOL::END:
 		c->state = STATE::END;
+		for (int i = 0; i < c->room->attend_count; ++i)
+		{
+			SetEvent(c->room->client[i]->hWaitEvent);
+		}
 		break;
 	case PROTOCOL::BACKPAGE:
 		EnterCriticalSection(&cs);
@@ -784,9 +772,9 @@ void EndProcess(ClientInfo* c)
 	ZeroMemory(temp, MAXBUF);
 	WaitForSingleObject(c->hWaitEvent, INFINITE);
 	EnterCriticalSection(&cs);
-	for (int i = 0; i < game->lose_count; ++i)
+	for (int i = 0; i < c->room->game->lose_count; ++i)
 	{
-		if (!strcmp(c->user->NICK, game->lose_name[i]))
+		if (!strcmp(c->user->NICK, c->room->game->lose_name[i]))
 		{
 			strcpy(temp, FAIMENUMBER_MSG);
 			break;
@@ -794,12 +782,12 @@ void EndProcess(ClientInfo* c)
 		else strcpy(temp, SUCCESSNUMBER_MSG);
 
 	}
-	sprintf(buf, GAMERESULT_MSG, game->game_number);
+	sprintf(buf, GAMERESULT_MSG, c->room->game->game_number);
 	strcat(temp, buf);
-	for (int i = 0; i < game->lose_count; ++i)
+	for (int i = 0; i < c->room->game->lose_count; ++i)
 	{
-		strcat(temp, game->lose_name[i]);
-		if (i != game->lose_count - 1)
+		strcat(temp, c->room->game->lose_name[i]);
+		if (i != c->room->game->lose_count - 1)
 			strcat(temp, ",");
 	}
 	LeaveCriticalSection(&cs);

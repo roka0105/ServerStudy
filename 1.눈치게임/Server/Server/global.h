@@ -144,11 +144,13 @@ typedef struct RoomInfo
 			client[i] = new ClientInfo();
 		}
 		ZeroMemory(name, MAXBUF);
+		game = NULL;
 	}
 	int number;
 	int attend_count;
 	ClientInfo* client[LIMITNUM];
 	char name[MAXBUF];
+	GameInfo* game;
 };
 void err_quit(char* msg);
 void err_display(char* msg);
@@ -202,7 +204,7 @@ UserInfo* User[MAXNUM];
 int UserCount = 0;
 HANDLE hThread;
 char* Roomname[LIMITNUM];
-GameInfo* game;
+//GameInfo* game;
 int waitcount=0;
 #else
 extern CRITICAL_SECTION cs;
@@ -214,6 +216,6 @@ extern UserInfo* User[MAXNUM];
 extern int UserCount;
 extern HANDLE hThread;
 extern char* Roomname[LIMITNUM];
-extern GameInfo* game;
+//extern GameInfo* game;
 extern int waitcount;
 #endif
