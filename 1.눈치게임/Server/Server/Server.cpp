@@ -34,18 +34,21 @@ int main(int argv, char* argc[])
 			continue;
 		} 
 		client->hWaitEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-		client->hEndEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		client->hEndEvent = CreateEvent(NULL, FALSE, FALSE, NULL); 
+		client->hTimercheck = CreateEvent(NULL, FALSE, FALSE, NULL);
 		if (client->hWaitEvent == NULL)
 		{
 			RemoveClient(client);
 			break;
 		}
 		AddClient(client);
+		
 		hThread = CreateThread(0, NULL, ClientThread, client, 0, NULL);
 		if (hThread == NULL)
 			RemoveClient(client);
 		else CloseHandle(hThread);
 	}
+
 	UserLogOut(true);
 	DeleteCriticalSection(&cs);
 	closesocket(listensocket);

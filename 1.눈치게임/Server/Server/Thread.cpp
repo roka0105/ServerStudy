@@ -1,5 +1,31 @@
 #include "global.h"
+DWORD CALLBACK TimerThread(LPVOID arg)
+{
+	ClientInfo* client = (ClientInfo*)arg;
+	float now = 0;
+	while (1)
+	{
+		WaitForSingleObject(client->room->game->hTimerStartEvent, INFINITE);
+		if (client->state == STATE::MAINMENU)
+		{
+			break;
+		}
+		while (1)
+		{
+			now = (clock() - client->room->game->start_time) / CLOCKS_PER_SEC;
+			printf("%fÃÊ\n", now);
+			if (now >= LIMITTIME)
+			{
+				for(int i=0;i<client->room->attend_count;++i)
+				SetEvent(client->room->client[i]->hTimercheck);
+				client->room->game->Next = true;
+				break;
+			}
 
+		}
+	}
+	return 0;
+}
 DWORD CALLBACK ClientThread(LPVOID arg)
 {
 	ClientInfo* client = (ClientInfo*)arg;
@@ -32,7 +58,7 @@ DWORD CALLBACK ClientThread(LPVOID arg)
 			EndProcess(client);
 			break;
 		case STATE::EXIT:
-			UserLogOut(false,client);
+			UserLogOut(false, client);
 			ExitProcess(client);
 			RemoveClient(client);
 			endflag = true;

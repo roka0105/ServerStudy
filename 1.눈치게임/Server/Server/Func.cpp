@@ -72,7 +72,7 @@ void CreateRoom(char* roomname)
 	++RoomCount;
 	LeaveCriticalSection(&cs);
 }
-void UserLogOut(bool all,ClientInfo* c)
+void UserLogOut(bool all, ClientInfo* c)
 {
 	EnterCriticalSection(&cs);
 	for (int i = 0; i < UserCount; ++i)
@@ -80,7 +80,7 @@ void UserLogOut(bool all,ClientInfo* c)
 		if (all)
 		{
 			User[i]->loging = false;
-	    }
+		}
 		else
 		{
 			if (c != NULL && !strcmp(c->user->ID, User[i]->ID))
@@ -149,7 +149,7 @@ void InitRoom()
 	{
 		Room[i] = new RoomInfo();
 		Room[i]->attend_count = 0;
-		sprintf(Room[i]->name, "%s",RandomRoom_Setname());
+		sprintf(Room[i]->name, "%s", RandomRoom_Setname());
 		Room[i]->number = i + 1;
 	}
 }
@@ -167,7 +167,7 @@ bool LoginCheck(ClientInfo* c, UserInfo* userinfo)
 	}
 	//유저가 입력한 아이디,비밀번호와 일치하는 정보 찾기.
 	for (int i = 0; i < UserCount; ++i)
-	{   
+	{
 		if (!strcmp(User[i]->ID, userinfo->ID) && !strcmp(User[i]->PW, userinfo->PW))
 		{   //이미 로그인 중인 경우
 			if (User[i]->loging)
@@ -248,7 +248,7 @@ void SendGameNumber(ClientInfo* c)
 	for (int i = 0; i < c->room->attend_count; ++i)
 	{
 		size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
- 		retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+		retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			c->state = STATE::EXIT;
@@ -485,13 +485,22 @@ void RoomProcess(ClientInfo* c)
 		{
 			ZeroMemory(c->room->game, sizeof(GameInfo));
 			delete c->room->game;
-			c->room->game=NULL;
+			c->room->game = NULL;
 		}
 		if (c->room->attend_count == LIMITNUM)
 		{
 			if (c->room->game == NULL)
+			{
+				hThread2 = CreateThread(0, NULL, TimerThread, c, 0, NULL);
+				CloseHandle(hThread2);
 				c->room->game = new GameInfo();
-
+				c->room->game->Timer = LIMITTIME;
+				for (int i = 0; i < LIMITNUM; ++i)
+				{
+					c->room->game->hTimerEvent[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
+				}
+				c->room->game->hTimerStartEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+			}
 			for (int i = 0; i < LIMITNUM; ++i)
 			{
 				ClientInfo* client = c->room->client[i];
@@ -520,22 +529,22 @@ void RoomProcess(ClientInfo* c)
 			return;
 		}
 		break;
-		case PROTOCOL::BACKPAGE:
-			//방 나가기.	
-			EnterCriticalSection(&cs);
-			c->room->attend_count--;
-			for (int i = 0; i < c->room->attend_count + 1; ++i)
+	case PROTOCOL::BACKPAGE:
+		//방 나가기.	
+		EnterCriticalSection(&cs);
+		c->room->attend_count--;
+		for (int i = 0; i < c->room->attend_count + 1; ++i)
+		{
+			if (c->room->client[i] == c)
 			{
-				if (c->room->client[i] == c)
-				{
-					c->room->client[i] = NULL;
-					c->room = NULL;
-					break;
-				}
+				c->room->client[i] = NULL;
+				c->room = NULL;
+				break;
 			}
-			LeaveCriticalSection(&cs);
-			c->state = STATE::ROOMLIST;
-			return;
+		}
+		LeaveCriticalSection(&cs);
+		c->state = STATE::ROOMLIST;
+		return;
 	}
 }
 //해당 프로세스에서 패배,승리 판단 기능 및 오류에 대한 수정에 대한 주석
@@ -582,7 +591,6 @@ void GameStartProcess(ClientInfo* c)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
-	
 	if (!RecvPacket(c->sock, c->recvbuf))
 	{
 		c->state = STATE::EXIT;
@@ -593,70 +601,56 @@ void GameStartProcess(ClientInfo* c)
 	{
 	case PROTOCOL::STARTGAME:
 		WaitForSingleObject(c->hWaitEvent, INFINITE);
+		periodFrequency = 0;
+		//QueryPerformanceFrequency((LARGE_INTEGER*)&periodFrequency);
+		//printf("%d", periodFrequency);
+		//PER_SEC = periodFrequency/100;
 		//클라에서 입력한 버튼값으로 판단
- 		UnPackPacket(c->recvbuf, c->game_number);
-		//순차적 입력이 아닐시 (생각해보니까 이것도 패배처리하는게 맞을듯.)
-		/*if (c->game_number != game->game_number + 1)
-		{
-			size = PackPacket(c->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::WRONGNUMBER, WRONG_MSG);
-			retval = send(c->sock, c->sendbuf, size, 0);
-			if (retval == SOCKET_ERROR)
-			{
-				err_display((char*)"wrong msg send err()");
-			}
-			return;
-		}*/
+		UnPackPacket(c->recvbuf, c->game_number);
+		c->endtimer = clock();
 		EnterCriticalSection(&cs);
-		if (c->room->game->start_time != 0)
-		{
-			c->room->game->end_time = clock();
-		}
-		//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같거나 작거나 순차적 입력이 아닐경우(값이 큰경우)
+		//순차적 입력이 아닐시 (생각해보니까 이것도 패배처리하는게 맞을듯.)
 		if (c->room->game->befor_client != NULL)
-		{
+		{	
+			//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같거나 작거나 순차적 입력이 아닐경우(값이 큰경우)
 			if (c->game_number <= c->room->game->befor_client->game_number || c->game_number > c->room->game->befor_client->game_number + 1)
 			{
-				c->room->game->game_number = c->game_number;
-				float time = (c->room->game->end_time - c->room->game->start_time) / CLOCKS_PER_SEC;
 				//일정 시간 안에 둘의 입력이 겹쳤다면(둘다 탈락으로 체크)
-				if (time <= LIMITTIME&&c->game_number==c->room->game->befor_client->game_number)
+				if (!(c->room->game->Next) && c->game_number == c->room->game->befor_client->game_number)
 				{
+					c->room->game->game_number = c->game_number;
+					c->protocol = PROTOCOL::SAMENUMBER;
 					if (!c->room->game->sametime_check)
 					{
 						strcpy(c->room->game->lose_name[0], c->room->game->befor_client->user->NICK);
 						c->room->game->lose_count = 1;
 						c->room->game->sametime_check = true;
+						SetEvent(c->room->game->hTimerEvent[c->room->game->timer_event_index]);
+						++c->room->game->timer_event_index;
 					}
+					//중복 클라가 여러개일 경우 마지막 클라에 대한 정보를 저장한다.
+					c->room->game->Last_client = c;
 					strcpy(c->room->game->lose_name[c->room->game->lose_count], c->user->NICK);
 					++c->room->game->lose_count;
 					SendGameNumber(c);
-					//아직 입력하지 않은 클라에 대한 게임 종료 처리
-					for (int i = 0; i < c->room->attend_count; ++i)
-					{
-						if (c->room->client[i]->game_number == 0)
-						{
-							size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
-							retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
-							if (retval == SOCKET_ERROR)
-							{
-								c->state = STATE::EXIT;
-								LeaveCriticalSection(&cs);
-								return;
-							}
-						}
-					}
+					c->room->game->loseresult = true;
 					c->state = STATE::END;
+					//endprocess에서 Multipleobject 사용을 위한 배열. 해당 배열에 중복된 유저수 만큼의 이벤트를 켜준다.
+					SetEvent(c->room->game->hTimerEvent[c->room->game->timer_event_index]);
+					++c->room->game->timer_event_index;
 					LeaveCriticalSection(&cs);
 					return;
 				}
 				//시간 지나고 이전 입력값보다 작거나 같은 숫자 입력 시 
-				else if (c->room->game->game_number <= c->game_number)
+				else if (c->room->game->game_number <= c->game_number && !c->room->game->loseresult)
 				{
+					c->room->game->game_number = c->game_number;
 					++c->room->game->lose_count;
 					c->room->game->game_number = c->game_number;
 					strcpy(c->room->game->lose_name[0], c->user->NICK);
 					SendGameNumber(c);
-					//아직 입력하지 않은 클라에 대한 게임 종료 처리
+					c->state = STATE::END;
+					//입력못한 클라가 있을 경우
 					for (int i = 0; i < c->room->attend_count; ++i)
 					{
 						if (c->room->client[i]->game_number == 0)
@@ -669,36 +663,43 @@ void GameStartProcess(ClientInfo* c)
 								LeaveCriticalSection(&cs);
 								return;
 							}
+							break;
 						}
 					}
-					c->state = STATE::END;
 					LeaveCriticalSection(&cs);
 					return;
 				}
-				//순차적 입력이 아닌 큰값 입력시
-				++c->room->game->lose_count;
-				strcpy(c->room->game->lose_name[0], c->user->NICK);
-				//아직 입력하지 않은 클라에 대한 게임 종료 처리
-				for (int i = 0; i < c->room->attend_count; ++i)
+				else if (c->game_number!=c->room->game->game_number+1&& !c->room->game->loseresult)
 				{
-					if (c->room->client[i]->game_number == 0)
+                    c->room->game->game_number = c->game_number;
+					//순차적 입력이 아닌 큰값 입력시
+					++c->room->game->lose_count;
+					strcpy(c->room->game->lose_name[0], c->user->NICK);
+					SendGameNumber(c);
+					c->state = STATE::END;
+					//입력못한 클라가 있을 경우
+					for (int i = 0; i < c->room->attend_count; ++i)
 					{
-						size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
-						retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
-						if (retval == SOCKET_ERROR)
+						if (c->room->client[i]->game_number == 0)
 						{
-							c->state = STATE::EXIT;
-							LeaveCriticalSection(&cs);
-							return;
+							size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+							retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+							if (retval == SOCKET_ERROR)
+							{
+								c->state = STATE::EXIT;
+								LeaveCriticalSection(&cs);
+								return;
+							}
+							break;
 						}
 					}
+					LeaveCriticalSection(&cs);
+					return;
 				}
-				c->state = STATE::END;
-				LeaveCriticalSection(&cs);
-				return;
 			}
 			//이전숫자가 마지막 생존 숫자였다면 남은 클라는 자동 탈락
-			else if (c->game_number == LIMITNUM - 1)
+			c->room->game->game_number = c->game_number;
+			if (c->game_number == LIMITNUM - 1 && !c->room->game->loseresult)
 			{
 				for (int i = 0; i < c->room->attend_count; ++i)
 				{
@@ -724,24 +725,21 @@ void GameStartProcess(ClientInfo* c)
 				return;
 			}
 		}
-		//탈락이 아닐 시
-		c->room->game->befor_client = c;
-		c->room->game->game_number = c->game_number;
-		c->room->game->start_time = clock();
-		LeaveCriticalSection(&cs);
-		SendGameNumber(c);
-		/*for (int i = 0; i < c->room->attend_count; ++i)
+		if (!c->room->game->loseresult)
 		{
-			size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
-			retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
-			if (retval == SOCKET_ERROR)
-			{
-				c->state = STATE::EXIT;
-				return;
-			}
-		}*/
-		//printf("웨이트 풀림\n");
+			//탈락이 아닐 시
+			c->room->game->befor_client = c;
+			c->room->game->game_number = c->game_number;
+			c->room->game->start_time = clock();
+			//최초에 한번만 켜주기.
+			if (c->room->game->timer_event_index == 0)
+				SetEvent(c->room->game->hTimerStartEvent);
+			c->room->game->Next = false;
+			c->room->game->Timer = LIMITTIME;
+			SendGameNumber(c);
+		}
 		c->state = STATE::END;
+		LeaveCriticalSection(&cs);
 		return;
 		break;
 	case PROTOCOL::END:
@@ -777,8 +775,51 @@ void EndProcess(ClientInfo* c)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
+	//정해진 시간이 지나면 동일시간 중복체크를 그만 둔다.(timerthread에서 일정시간이 지나면 해당 이벤트를 켜줌)
+	WaitForSingleObject(c->hTimercheck, INFINITE);
+	/*패배의 종류가 samenumber일 경우 그리고 마지막 패배 등록자가 현재 클라와 같을 경우
+	  입력못한 클라가 있을경우 해당 클라에 대한 wait상태 해제 시켜준다.
+	  (입력안한 클라가 gamestart process에서 end protocol을 수행할때 모든 클라이언트의 wait event를 켜줌.)
+	  하지만 모두 입력이 완료된 상태라면 여기서 모든 클라에 대한 wait event를 켜준다.*/
+	if (c->protocol == PROTOCOL::SAMENUMBER && c->room->game->Last_client == c)
+	{
+		printf("%d\n", c->room->game->timer_event_index);
+		WaitForMultipleObjects(c->room->game->timer_event_index, c->room->game->hTimerEvent, TRUE, INFINITE);
+		bool find = false;
+		EnterCriticalSection(&cs);
+		if (c->room->game->loseresult)
+		{
+			c->room->game->loseresult = false;
+			//입력못한 클라가 있을 경우
+			for (int i = 0; i < c->room->attend_count; ++i)
+			{
+				if (c->room->client[i]->game_number == 0)
+				{
+					size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+					retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+					if (retval == SOCKET_ERROR)
+					{
+						c->state = STATE::EXIT;
+						LeaveCriticalSection(&cs);
+						return;
+					}
+					find = true;
+					break;
+				}
+			}
+			//입력못한 남은 클라가 없을경우
+			if (!find)
+			{
+				for (int j = 0; j < c->room->attend_count; ++j)
+					SetEvent(c->room->client[j]->hWaitEvent);
+			}
+		}
+		LeaveCriticalSection(&cs);
+	}
+	//게임 종료에 대한 결과값 계산이 다 끝났다면 waitevent는 켜지므로 이 구간을 넘어간다.
 	WaitForSingleObject(c->hWaitEvent, INFINITE);
 	EnterCriticalSection(&cs);
+	//게임 결과 전송
 	for (int i = 0; i < c->room->game->lose_count; ++i)
 	{
 		if (!strcmp(c->user->NICK, c->room->game->lose_name[i]))
@@ -799,7 +840,7 @@ void EndProcess(ClientInfo* c)
 	}
 	LeaveCriticalSection(&cs);
 	strcat(temp, "\r\n");
-	//클라에 종료메세지 보내기
+	//클라에 게임결과 메세지 보내기
 	size = PackPacket(c->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMERESULT, temp);
 	retval = send(c->sock, c->sendbuf, size, 0);
 	if (retval == SOCKET_ERROR)
@@ -807,9 +848,18 @@ void EndProcess(ClientInfo* c)
 		c->state = STATE::EXIT;
 		return;
 	}
+	c->state = STATE::MAINMENU;
 	++waitcount;
+	/*마지막 클라가 정리작업을 한다
+	  1.hTimerStartEvent를 켜줌으로써 timerthread를 종료시킨다.
+	  2.모든 클라이언트의 endevent를 켜준다.
+	  3.endevent가 켜지면 room에 대한 정보를 정리한다.
+	  4.모든 작업이 끝나면 메인화면으로 돌아간다.*/
 	if (waitcount == LIMITNUM)
 	{
+		//timer 스레드 종료
+		SetEvent(c->room->game->hTimerStartEvent);
+
 		for (int i = 0; i < LIMITNUM; ++i)
 		{
 			SetEvent(c->room->client[i]->hEndEvent);
@@ -821,7 +871,7 @@ void EndProcess(ClientInfo* c)
 	{
 		RemoveRoom(c->room);
 	}
-	c->state = STATE::MAINMENU;
+
 	return;
 }
 void ExitProcess(ClientInfo* c)

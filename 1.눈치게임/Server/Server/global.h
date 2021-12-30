@@ -9,8 +9,9 @@
 #define MAXNUM 100
 #define MAXBUF 256
 #define LIMITNUM 3
-#define LIMITTIME 2.0
+#define LIMITTIME 5
 #define SERVERPORT 9000
+
 
 #define NULL_MSG "정보를 입력하세요\r\n"
 #define LOGIN_NONE_MSG "일치하는 정보가 없습니다.\n"
@@ -75,6 +76,7 @@ enum class PROTOCOL
 	STARTGAME,
 	CREATEROOM,
 	REROOMLISTINFO,
+	SAMENUMBER,
 	END,
 	EXIT,
 	MAX
@@ -125,17 +127,25 @@ typedef struct ClientInfo
 	UserInfo* user;
 	RoomInfo* room;
 	int game_number;
-	HANDLE hWaitEvent,hEndEvent;
+	HANDLE hWaitEvent,hEndEvent, hTimercheck;
+	float endtimer;
 };
 typedef struct GameInfo
 {
 	ClientInfo* befor_client;//이전에 정답을 외친 클라이언트.
+	ClientInfo* Last_client;//지정된 초 안에 입력된 마지막 중복 클라이언트
 	int game_number;
 	float start_time;
 	float end_time;
+	int Timer;
 	char lose_name[LIMITNUM][MAXBUF];
 	int lose_count;
 	bool sametime_check;
+	HANDLE hTimerEvent[LIMITNUM];
+	HANDLE hTimerStartEvent;
+	int timer_event_index;
+	bool Next;
+	bool loseresult;
 };
 typedef struct RoomInfo
 {
@@ -197,7 +207,7 @@ void RoomProcess(ClientInfo* c);
 void GameStartProcess(ClientInfo* c);
 void EndProcess(ClientInfo* c);
 void ExitProcess(ClientInfo* c);
-
+DWORD CALLBACK TimerThread(LPVOID arg);
 DWORD CALLBACK ClientThread(LPVOID arg);
 #ifdef MAIN
 CRITICAL_SECTION cs;
@@ -207,10 +217,12 @@ ClientInfo* Client[MAXNUM];
 int ClientCount = 0;
 UserInfo* User[MAXNUM];
 int UserCount = 0;
-HANDLE hThread;
+HANDLE hThread,hThread2;
 char* Roomname[LIMITNUM];
 //GameInfo* game;
 int waitcount=0;
+__int64 periodFrequency;
+int PER_SEC = 0;
 #else
 extern CRITICAL_SECTION cs;
 extern RoomInfo* Room[MAXNUM];
@@ -219,8 +231,10 @@ extern ClientInfo* Client[MAXNUM];
 extern int ClientCount;
 extern UserInfo* User[MAXNUM];
 extern int UserCount;
-extern HANDLE hThread;
+extern HANDLE hThread, hThread2;
 extern char* Roomname[LIMITNUM];
 //extern GameInfo* game;
 extern int waitcount;
+extern __int64 periodFrequency;
+extern int PER_SEC;
 #endif

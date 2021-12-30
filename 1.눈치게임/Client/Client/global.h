@@ -49,6 +49,7 @@ enum class PROTOCOL
 	STARTGAME,
 	CREATEROOM,
 	REROOMLISTINFO,
+	SAMENUMBER,
 	END,
 	EXIT,
 	MAX
@@ -108,17 +109,25 @@ typedef struct ClientInfo
 	UserInfo* user;
 	RoomInfo* room;
 	int game_number;
-	HANDLE hWaitEvent, hEndEvent;
+	HANDLE hWaitEvent, hEndEventt, hTimercheck;
+	float endtimer;
 };
 typedef struct GameInfo
 {
 	ClientInfo* befor_client;//이전에 정답을 외친 클라이언트.
+	ClientInfo* Last_client;//지정된 초 안에 입력된 마지막 중복 클라이언트
 	int game_number;
 	float start_time;
 	float end_time;
+	int Timer;
 	char lose_name[LIMITNUM][MAXBUF];
 	int lose_count;
 	bool sametime_check;
+	HANDLE hTimerEvent[LIMITNUM];
+	HANDLE hTimerStartEvent;
+	float timer_event_index;
+	bool Next;
+	bool loseresult;
 };
 typedef struct RoomInfo
 {
