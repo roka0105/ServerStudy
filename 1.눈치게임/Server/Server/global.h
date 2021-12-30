@@ -9,7 +9,7 @@
 #define MAXNUM 100
 #define MAXBUF 256
 #define LIMITNUM 3
-#define LIMITTIME 5
+#define LIMITTIME 2
 #define SERVERPORT 9000
 
 

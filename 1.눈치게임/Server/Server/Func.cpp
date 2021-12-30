@@ -45,6 +45,10 @@ void RemoveRoom(RoomInfo* room)
 	{
 		if (Room[i] == room)
 		{
+			room->game->befor_client = NULL;
+			delete room->game->befor_client;
+			room->game->Last_client = NULL;
+			delete room->game->Last_client;
 			room->game = NULL;
 			delete room->game;
 			delete room;
@@ -601,7 +605,7 @@ void GameStartProcess(ClientInfo* c)
 	{
 	case PROTOCOL::STARTGAME:
 		WaitForSingleObject(c->hWaitEvent, INFINITE);
-		periodFrequency = 0;
+		//periodFrequency = 0;
 		//QueryPerformanceFrequency((LARGE_INTEGER*)&periodFrequency);
 		//printf("%d", periodFrequency);
 		//PER_SEC = periodFrequency/100;
@@ -642,7 +646,7 @@ void GameStartProcess(ClientInfo* c)
 					return;
 				}
 				//시간 지나고 이전 입력값보다 작거나 같은 숫자 입력 시 
-				else if (c->room->game->game_number <= c->game_number && !c->room->game->loseresult)
+				else if (c->room->game->befor_client->game_number >= c->game_number && !c->room->game->loseresult)
 				{
 					c->room->game->game_number = c->game_number;
 					++c->room->game->lose_count;
@@ -669,7 +673,7 @@ void GameStartProcess(ClientInfo* c)
 					LeaveCriticalSection(&cs);
 					return;
 				}
-				else if (c->game_number!=c->room->game->game_number+1&& !c->room->game->loseresult)
+				else if (c->game_number!=c->room->game->befor_client->game_number+1&& !c->room->game->loseresult)
 				{
                     c->room->game->game_number = c->game_number;
 					//순차적 입력이 아닌 큰값 입력시
@@ -869,6 +873,10 @@ void EndProcess(ClientInfo* c)
 	waitcount = 0;
 	if (c->room != NULL && c == c->room->client[LIMITNUM - 1])
 	{
+		for (int i = 0; i < c->room->attend_count; ++i)
+		{
+			c->room->client[i]->game_number = 0;
+		}
 		RemoveRoom(c->room);
 	}
 
