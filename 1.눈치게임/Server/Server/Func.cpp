@@ -51,11 +51,11 @@ void RemoveRoom(RoomInfo* room)
 			for (int j = i; j < RoomCount - 1; ++j)
 			{
 				Room[j] = Room[j + 1];
-				char* name = strtok(Room[j]->name, ".");
+				/*char* name = strtok(Room[j]->name, ".");
 				name = strtok(NULL, name);
 				sprintf(temp, "%d.", j + 1);
 				strcat(temp, name);
-				strcpy(Room[j]->name, temp);
+				strcpy(Room[j]->name, temp);*/
 			}
 			--RoomCount;
 			break;
@@ -582,7 +582,7 @@ void GameStartProcess(ClientInfo* c)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(temp, MAXBUF);
-	WaitForSingleObject(c->hWaitEvent, INFINITE);
+	
 	if (!RecvPacket(c->sock, c->recvbuf))
 	{
 		c->state = STATE::EXIT;
@@ -592,6 +592,7 @@ void GameStartProcess(ClientInfo* c)
 	switch (protocol)
 	{
 	case PROTOCOL::STARTGAME:
+		WaitForSingleObject(c->hWaitEvent, INFINITE);
 		//클라에서 입력한 버튼값으로 판단
  		UnPackPacket(c->recvbuf, c->game_number);
 		//순차적 입력이 아닐시 (생각해보니까 이것도 패배처리하는게 맞을듯.)
