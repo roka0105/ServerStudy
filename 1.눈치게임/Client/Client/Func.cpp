@@ -281,6 +281,26 @@ INT_PTR CALLBACK DlgProc5(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)//¹
 			}
 			SetEvent(hWriteEvent);
 			return TRUE;
+		case IDC_BTN4:
+			ZeroMemory(buf, MAXBUF);
+			GetWindowText(hBtn[3], (LPSTR)buf, MAXBUF);
+			Client->game_number = atoi(buf);
+			for (int i = 0; i < LIMITNUM; ++i)
+			{
+				EnableWindow(hBtn[i], FALSE);
+			}
+			SetEvent(hWriteEvent);
+			return TRUE;
+		case IDC_BTN5:
+			ZeroMemory(buf, MAXBUF);
+			GetWindowText(hBtn[4], (LPSTR)buf, MAXBUF);
+			Client->game_number = atoi(buf);
+			for (int i = 0; i < LIMITNUM; ++i)
+			{
+				EnableWindow(hBtn[i], FALSE);
+			}
+			SetEvent(hWriteEvent);
+			return TRUE;
 		case IDCANCEL:
 			if (Client->state == STATE::END)
 			{

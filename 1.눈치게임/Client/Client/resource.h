@@ -11,11 +11,11 @@
 #define IDC_BTN1                        500
 #define IDC_BTN2                        501
 #define IDC_BTN3                        502
-#define IDC_BTN4                        504
-#define IDC_BTN5                        505
-#define IDC_BTN6                        506
-#define IDC_BTN7                        507
-#define IDC_BTN8                        508
+#define IDC_BTN4                        503
+#define IDC_BTN5                        504
+#define IDC_BTN6                        505
+#define IDC_BTN7                        506
+#define IDC_BTN8                        507
 #define IDC_LOGIN                       1002
 #define IDC_JOIN                        1003
 #define IDC_ID                          1003

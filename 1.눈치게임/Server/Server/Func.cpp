@@ -135,7 +135,7 @@ void FileLoad()
 }
 char* RandomRoom_Setname()
 {
-	int index = rand() % LIMITNUM;
+	int index = rand() % 3;
 	return Roomname[index];
 }
 void InitRoom()
@@ -647,6 +647,7 @@ void GameStartProcess(ClientInfo* c)
 				//시간 지나고 이전 입력값보다 작거나 같은 숫자 입력 시 
 				else if (c->room->game->befor_client->game_number >= c->game_number && !c->room->game->loseresult)
 				{
+					c->room->game->loseresult = true;
 					c->room->game->game_number = c->game_number;
 					++c->room->game->lose_count;
 					c->room->game->game_number = c->game_number;
@@ -668,11 +669,16 @@ void GameStartProcess(ClientInfo* c)
 							}
 						}
 					}
+					for (int i = 0; i < c->room->attend_count; ++i)
+					{
+						SetEvent(c->room->client[i]->hWaitEvent);
+					}
 					LeaveCriticalSection(&cs);
 					return;
 				}
 				else if (c->game_number != c->room->game->befor_client->game_number + 1 && !c->room->game->loseresult)
 				{   //순차적 입력이 아닌 큰값 입력시
+					c->room->game->loseresult = true;
 					c->room->game->game_number = c->game_number;
 					++c->room->game->lose_count;
 					strcpy(c->room->game->lose_name[0], c->user->NICK);
@@ -692,6 +698,10 @@ void GameStartProcess(ClientInfo* c)
 								return;
 							}
 						}
+					}
+					for (int i = 0; i < c->room->attend_count; ++i)
+					{
+						SetEvent(c->room->client[i]->hWaitEvent);
 					}
 					LeaveCriticalSection(&cs);
 					return;
@@ -701,6 +711,7 @@ void GameStartProcess(ClientInfo* c)
 			c->room->game->game_number = c->game_number;
 			if (c->game_number == LIMITNUM - 1 && !c->room->game->loseresult)
 			{
+				c->room->game->loseresult = true;
 				for (int i = 0; i < c->room->attend_count; ++i)
 				{
 					if (c->room->client[i]->game_number == 0)
@@ -721,6 +732,10 @@ void GameStartProcess(ClientInfo* c)
 					}
 				}
 				c->state = STATE::END;
+				for (int i = 0; i < c->room->attend_count; ++i)
+				{
+					SetEvent(c->room->client[i]->hWaitEvent);
+				}
 				LeaveCriticalSection(&cs);
 				return;
 			}
@@ -728,7 +743,8 @@ void GameStartProcess(ClientInfo* c)
 		else
 		{
 			if (c->game_number != 1)
-			{
+			{   
+				c->room->game->loseresult = true;
 				c->room->game->start_time = clock();
 				c->room->game->game_number = c->game_number;
 				++c->room->game->lose_count;
@@ -750,6 +766,10 @@ void GameStartProcess(ClientInfo* c)
 							LeaveCriticalSection(&cs);
 							return;
 						}
+					}
+					for (int i = 0; i < c->room->attend_count; ++i)
+					{
+						SetEvent(c->room->client[i]->hWaitEvent);
 					}
 				}
 				LeaveCriticalSection(&cs);
@@ -824,7 +844,7 @@ void EndProcess(ClientInfo* c)
 			//입력못한 클라가 있을 경우
 			for (int i = 0; i < c->room->attend_count; ++i)
 			{
-				if (c->room->client[i]->game_number == 0)
+				if (c->room->client[i]->game_number != c->game_number)
 				{
 					size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
 					retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
@@ -838,17 +858,15 @@ void EndProcess(ClientInfo* c)
 					break;
 				}
 			}
-			//입력못한 남은 클라가 없을경우
-			/*if (!find)
-			{
-				for (int j = 0; j < c->room->attend_count; ++j)
-					SetEvent(c->room->client[j]->hWaitEvent);
-			}*/
+			
+			for (int j = 0; j < c->room->attend_count; ++j)
+				SetEvent(c->room->client[j]->hWaitEvent);
+			
 		}
 		LeaveCriticalSection(&cs);
 	}
 	//게임 종료에 대한 결과값 계산이 다 끝났다면 waitevent는 켜지므로 이 구간을 넘어간다.
-	//WaitForSingleObject(c->hWaitEvent, INFINITE);
+	WaitForSingleObject(c->hWaitEvent, INFINITE);
 	EnterCriticalSection(&cs);
 	//게임 결과 전송
 	for (int i = 0; i < c->room->game->lose_count; ++i)

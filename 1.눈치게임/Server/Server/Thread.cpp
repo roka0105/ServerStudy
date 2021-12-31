@@ -16,13 +16,15 @@ DWORD CALLBACK TimerThread(LPVOID arg)
 			printf("%fÃÊ\n", now);
 			if (now >= LIMITTIME)
 			{
-				for (int i = 0; i < client->room->attend_count; ++i)
-				{
-					SetEvent(client->room->client[i]->hTimercheck);
-					//SetEvent(client->room->client[i]->hWaitEvent);
-				}
 				client->room->game->Next = true;
-				break;
+				if (client->room->game->loseresult)
+				{
+					for (int i = 0; i < client->room->attend_count; ++i)
+					{
+						SetEvent(client->room->client[i]->hTimercheck);
+					}
+					return 0;
+				}
 			}
 
 		}

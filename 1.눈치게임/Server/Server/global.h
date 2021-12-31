@@ -8,7 +8,7 @@
 #define MAXSTACKBUF 4096
 #define MAXNUM 100
 #define MAXBUF 256
-#define LIMITNUM 3
+#define LIMITNUM 5
 #define LIMITTIME 2
 #define SERVERPORT 9000
 
