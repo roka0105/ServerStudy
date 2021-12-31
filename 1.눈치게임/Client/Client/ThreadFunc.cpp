@@ -336,6 +336,7 @@ DWORD CALLBACK RecvThread(LPVOID arg)
 			ZeroMemory(buf4, MAXBUF);
 			break;
 		case PROTOCOL::ROOMINFO:
+			ZeroMemory(roominfo, sizeof(RoomInfo));
 			UnPackPacket(Client->recvbuf, Roomcount, LimitAttend, roominfo, Client->user);
 			char temp[MAXBUF];
 			ZeroMemory(temp, MAXBUF);

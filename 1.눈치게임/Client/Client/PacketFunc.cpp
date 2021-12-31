@@ -122,6 +122,7 @@ void UnPackPacket(const char* recvbuf, int& roomcount, int& limitattendcount, Ro
 		ptr += sizeof(int);
 		memcpy(&strsize, ptr, sizeof(int));
 		ptr += sizeof(int);
+		ZeroMemory(roomlist[i].name, MAXBUF);
 		memcpy(roomlist[i].name, ptr, strsize);
 		ptr += strsize;
 		memcpy(&roomlist[i].attend_count, ptr, sizeof(int));

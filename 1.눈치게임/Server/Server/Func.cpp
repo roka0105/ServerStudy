@@ -71,6 +71,7 @@ void CreateRoom(char* roomname)
 {
 	EnterCriticalSection(&cs);
 	RoomInfo* room = new RoomInfo();
+	ZeroMemory(room->name, MAXBUF);
 	strcpy(room->name, roomname);
 	Room[RoomCount] = room;
 	++RoomCount;
@@ -247,10 +248,10 @@ void SendGameNumber(ClientInfo* c)
 	ZeroMemory(buf, MAXBUF);
 	strcpy(temp, GAMENUMBER_MSG);
 	sprintf(buf, temp, c->user->NICK, c->game_number);
+	size = PackPacket(c->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
 	for (int i = 0; i < c->room->attend_count; ++i)
 	{
-		size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::ROOMRESULT, MSGTYPE::GAMENUMBER, buf);
-		retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+		retval = send(c->room->client[i]->sock, c->sendbuf, size, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			c->state = STATE::EXIT;
@@ -613,7 +614,7 @@ void GameStartProcess(ClientInfo* c)
 		EnterCriticalSection(&cs);
 		//순차적 입력이 아닐시 (생각해보니까 이것도 패배처리하는게 맞을듯.)
 		if (c->room->game->befor_client != NULL)
-		{	
+		{
 			//현재 클라가 입력한 숫자가 이전 클라가 입력한 숫자와 같거나 작거나 순차적 입력이 아닐경우(값이 큰경우)
 			if (c->game_number <= c->room->game->befor_client->game_number || c->game_number > c->room->game->befor_client->game_number + 1)
 			{
@@ -665,16 +666,14 @@ void GameStartProcess(ClientInfo* c)
 								LeaveCriticalSection(&cs);
 								return;
 							}
-							break;
 						}
 					}
 					LeaveCriticalSection(&cs);
 					return;
 				}
-				else if (c->game_number!=c->room->game->befor_client->game_number+1&& !c->room->game->loseresult)
-				{
-                    c->room->game->game_number = c->game_number;
-					//순차적 입력이 아닌 큰값 입력시
+				else if (c->game_number != c->room->game->befor_client->game_number + 1 && !c->room->game->loseresult)
+				{   //순차적 입력이 아닌 큰값 입력시
+					c->room->game->game_number = c->game_number;
 					++c->room->game->lose_count;
 					strcpy(c->room->game->lose_name[0], c->user->NICK);
 					SendGameNumber(c);
@@ -692,7 +691,6 @@ void GameStartProcess(ClientInfo* c)
 								LeaveCriticalSection(&cs);
 								return;
 							}
-							break;
 						}
 					}
 					LeaveCriticalSection(&cs);
@@ -726,6 +724,37 @@ void GameStartProcess(ClientInfo* c)
 				LeaveCriticalSection(&cs);
 				return;
 			}
+		}//처음 들어온 값이 1이 아닌경우
+		else
+		{
+			if (c->game_number != 1)
+			{
+				c->room->game->start_time = clock();
+				c->room->game->game_number = c->game_number;
+				++c->room->game->lose_count;
+				strcpy(c->room->game->lose_name[0], c->user->NICK);
+				if (c->room->game->timer_event_index == 0)
+					SetEvent(c->room->game->hTimerStartEvent);
+				SendGameNumber(c);
+				c->state = STATE::END;
+				//입력못한 클라가 있을 경우
+				for (int i = 0; i < c->room->attend_count; ++i)
+				{
+					if (c->room->client[i]->game_number == 0)
+					{
+						size = PackPacket(c->room->client[i]->sendbuf, PROTOCOL::END);
+						retval = send(c->room->client[i]->sock, c->room->client[i]->sendbuf, size, 0);
+						if (retval == SOCKET_ERROR)
+						{
+							c->state = STATE::EXIT;
+							LeaveCriticalSection(&cs);
+							return;
+						}
+					}
+				}
+				LeaveCriticalSection(&cs);
+				return;
+			}
 		}
 		if (!c->room->game->loseresult)
 		{
@@ -746,10 +775,10 @@ void GameStartProcess(ClientInfo* c)
 		break;
 	case PROTOCOL::END:
 		c->state = STATE::END;
-		for (int i = 0; i < c->room->attend_count; ++i)
-		{
-			SetEvent(c->room->client[i]->hWaitEvent);
-		}
+		/*	for (int i = 0; i < c->room->attend_count; ++i)
+			{
+				SetEvent(c->room->client[i]->hWaitEvent);
+			}*/
 		break;
 	case PROTOCOL::BACKPAGE:
 		EnterCriticalSection(&cs);
@@ -810,16 +839,16 @@ void EndProcess(ClientInfo* c)
 				}
 			}
 			//입력못한 남은 클라가 없을경우
-			if (!find)
+			/*if (!find)
 			{
 				for (int j = 0; j < c->room->attend_count; ++j)
 					SetEvent(c->room->client[j]->hWaitEvent);
-			}
+			}*/
 		}
 		LeaveCriticalSection(&cs);
 	}
 	//게임 종료에 대한 결과값 계산이 다 끝났다면 waitevent는 켜지므로 이 구간을 넘어간다.
-	WaitForSingleObject(c->hWaitEvent, INFINITE);
+	//WaitForSingleObject(c->hWaitEvent, INFINITE);
 	EnterCriticalSection(&cs);
 	//게임 결과 전송
 	for (int i = 0; i < c->room->game->lose_count; ++i)
