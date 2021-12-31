@@ -4,6 +4,7 @@
 int main(int argv, char* argc[])
 {
 	FileLoad();
+	
 	srand(time(NULL));
 	int retval = 0;
 	WSADATA ws;
@@ -20,7 +21,7 @@ int main(int argv, char* argc[])
 	retval = listen(listensocket, SOMAXCONN);
 	if (retval == SOCKET_ERROR)err_quit((char*)"listen()");
 	InitRoom();
-
+    UserLogOut(true);
 	
 	InitializeCriticalSection(&cs);
 	while (1)
@@ -48,8 +49,6 @@ int main(int argv, char* argc[])
 			RemoveClient(client);
 		else CloseHandle(hThread);
 	}
-
-	UserLogOut(true);
 	DeleteCriticalSection(&cs);
 	closesocket(listensocket);
 	WSACleanup();

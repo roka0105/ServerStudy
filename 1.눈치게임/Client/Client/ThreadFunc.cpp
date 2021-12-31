@@ -121,7 +121,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 					err_display((char*)"send()");
 					Client->state = STATE::EXIT;
 				}
-				Client->protocol = PROTOCOL::CHECKSTARTGAME;
 				break;
 				/*	case PROTOCOL::STARTGAME:
 						size = PackPacket(Client->sendbuf, PROTOCOL::STARTGAME);
@@ -295,9 +294,11 @@ DWORD CALLBACK RecvThread(LPVOID arg)
 				break;
 			case MSGTYPE::IS_FULL_ROOM_ERR:
 				MessageBox(NULL, buf4, "입장불가", MB_OK);
+				SetEvent(hWaitEvent);
 				break;
 			case MSGTYPE::IN_ROOM_SUCCESS:
 				Client->state = STATE::ROOM;
+				Client->protocol = PROTOCOL::CHECKSTARTGAME;
 				SetEvent(hWaitEvent);
 				break;
 			case MSGTYPE::STARTGAME:

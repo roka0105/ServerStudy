@@ -78,7 +78,6 @@ void CreateRoom(char* roomname)
 }
 void UserLogOut(bool all, ClientInfo* c)
 {
-	EnterCriticalSection(&cs);
 	for (int i = 0; i < UserCount; ++i)
 	{
 		if (all)
@@ -93,7 +92,6 @@ void UserLogOut(bool all, ClientInfo* c)
 			}
 		}
 	}
-	LeaveCriticalSection(&cs);
 }
 void AddUser(UserInfo* u)
 {
