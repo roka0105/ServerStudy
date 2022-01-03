@@ -708,9 +708,9 @@ void GameStartProcess(ClientInfo* c)
 				}
 			}
 			//이전숫자가 마지막 생존 숫자였다면 남은 클라는 자동 탈락
-			c->room->game->game_number = c->game_number;
+		
 			if (c->game_number == LIMITNUM - 1 && !c->room->game->loseresult)
-			{
+			{	c->room->game->game_number = c->game_number;
 				c->room->game->loseresult = true;
 				for (int i = 0; i < c->room->attend_count; ++i)
 				{
@@ -854,8 +854,6 @@ void EndProcess(ClientInfo* c)
 						LeaveCriticalSection(&cs);
 						return;
 					}
-					find = true;
-					break;
 				}
 			}
 			
@@ -920,6 +918,7 @@ void EndProcess(ClientInfo* c)
 	{
 		for (int i = 0; i < c->room->attend_count; ++i)
 		{
+			c->room->client[i]->protocol = PROTOCOL::NONE;
 			c->room->client[i]->game_number = 0;
 		}
 		RemoveRoom(c->room);
