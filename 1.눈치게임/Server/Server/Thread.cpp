@@ -5,11 +5,7 @@ DWORD CALLBACK TimerThread(LPVOID arg)
 	float now = 0;
 	while (1)
 	{
-		WaitForSingleObject(client->room->game->hTimerStartEvent, INFINITE);
-		if (client->state == STATE::MAINMENU)
-		{
-			break;
-		}
+		WaitForMultipleObjects(LIMITNUM, client->room->game->hTimerStartEvent, FALSE, INFINITE);
 		while (1)
 		{
 			now = (clock() - client->room->game->start_time) / CLOCKS_PER_SEC;
@@ -25,6 +21,7 @@ DWORD CALLBACK TimerThread(LPVOID arg)
 					}
 					return 0;
 				}
+				break;
 			}
 
 		}

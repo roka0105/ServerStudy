@@ -50,6 +50,7 @@ enum class PROTOCOL
 	CREATEROOM,
 	REROOMLISTINFO,
 	SAMENUMBER,
+	SAMETIME,
 	END,
 	EXIT,
 	MAX
@@ -111,6 +112,7 @@ typedef struct ClientInfo
 	int game_number;
 	HANDLE hWaitEvent, hEndEventt, hTimercheck;
 	float endtimer;
+	int index;
 };
 typedef struct GameInfo
 {
@@ -124,10 +126,11 @@ typedef struct GameInfo
 	int lose_count;
 	bool sametime_check;
 	HANDLE hTimerEvent[LIMITNUM];
-	HANDLE hTimerStartEvent;
+	HANDLE hTimerStartEvent[LIMITNUM];
 	float timer_event_index;
 	bool Next;
 	bool loseresult;
+	int index_count;
 };
 typedef struct RoomInfo
 {
