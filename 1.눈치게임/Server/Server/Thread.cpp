@@ -17,7 +17,14 @@ DWORD CALLBACK TimerThread(LPVOID arg)
 				{
 					for (int i = 0; i < client->room->attend_count; ++i)
 					{
-						SetEvent(client->room->client[i]->hTimercheck);
+						if (client->room->client[i]->protocol == PROTOCOL::SAMETIME)
+						{
+							for (int j = 0; j < LIMITNUM; ++j)
+							{
+								SetEvent(client->room->client[j]->hTimercheck);
+							}
+							break;
+						}
 					}
 					return 0;
 				}

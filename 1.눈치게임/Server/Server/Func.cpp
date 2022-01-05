@@ -45,6 +45,12 @@ void RemoveRoom(RoomInfo* room)
 	{
 		if (Room[i] == room)
 		{
+			for (int j = 0; j < LIMITNUM; ++j)
+			{
+				CloseHandle(room->game->hTimerEvent[i]);
+				CloseHandle(room->game->hTimerStartEvent[i]);
+			}
+			room->game->first_check = false;
 			ZeroMemory(room->game, sizeof(GameInfo));
 			room->game->befor_client = NULL;
 			delete room->game->befor_client;
@@ -510,12 +516,13 @@ void RoomProcess(ClientInfo* c)
 			if (c->room->game == NULL)
 			{
 				c->room->game = new GameInfo();
+				c->room->game->first_check = false;
 				c->room->game->NowTimer = LIMITTIME;
 				for (int i = 0; i < LIMITNUM; ++i)
 				{
 					c->room->game->hTimerEvent[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
 					c->room->game->hTimerStartEvent[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
-				}	
+				}
 				hThread2 = CreateThread(0, NULL, TimerThread, c, 0, NULL);
 				CloseHandle(hThread2);
 			}
@@ -617,15 +624,16 @@ void GameStartProcess(ClientInfo* c)
 		{
 			//일정 시간 안에 둘의 입력이 겹쳤다면
 			if (!(c->room->game->Next))
-			{   //둘의 입력값이 같다면
-				if (c->game_number == c->room->game->befor_client->game_number && !c->room->game->sametime_check)
+			{   
+				if (!c->room->game->sametime_check)
 				{
-					//c->protocol = PROTOCOL::SAMENUMBER;
+					c->protocol = PROTOCOL::SAMETIME;
 					strcpy(c->room->game->lose_name[0], c->room->game->befor_client->user->NICK);
 					c->room->game->lose_count = 1;
 					c->room->game->sametime_check = true;
 					SetEvent(c->room->game->hTimerEvent[c->room->game->timer_event_index]);
 					++c->room->game->timer_event_index;
+
 				}
 				c->protocol = PROTOCOL::SAMETIME;
 				c->room->game->game_number = c->game_number;
@@ -734,7 +742,7 @@ void GameStartProcess(ClientInfo* c)
 					}
 				}
 				c->state = STATE::END;
-				for (int i = 0; i < c->room->attend_count; ++i)
+				/*for (int i = 0; i < c->room->attend_count; ++i)
 				{
 					if (c->room->client[i]->game_number == 0)
 					{
@@ -747,7 +755,7 @@ void GameStartProcess(ClientInfo* c)
 							return;
 						}
 					}
-				}
+				}*/
 				for (int i = 0; i < c->room->attend_count; ++i)
 				{
 					SetEvent(c->room->client[i]->hWaitEvent);
@@ -820,10 +828,19 @@ void GameStartProcess(ClientInfo* c)
 		}
 		if (!flag)
 		{
-			for (int i = 0; i < c->room->attend_count; ++i)
+			if (!c->room->game->first_check)
 			{
-				SetEvent(c->room->client[i]->hTimercheck);
+				c->room->game->first_check = true;
+				for (int i = 0; i < c->room->attend_count; ++i)
+				{
+					SetEvent(c->room->client[i]->hTimercheck);
+				}
 			}
+		}
+		else
+		{
+			for (int j = 0; j < c->room->attend_count; ++j)
+				SetEvent(c->room->client[j]->hWaitEvent);
 		}
 		break;
 	case PROTOCOL::BACKPAGE:
@@ -880,11 +897,14 @@ void EndProcess(ClientInfo* c)
 						LeaveCriticalSection(&cs);
 						return;
 					}
+					find = true;
 				}
 			}
-
-			for (int j = 0; j < c->room->attend_count; ++j)
-				SetEvent(c->room->client[j]->hWaitEvent);
+			if (!find)
+			{
+				for (int j = 0; j < c->room->attend_count; ++j)
+					SetEvent(c->room->client[j]->hWaitEvent);
+			}
 
 		}
 		LeaveCriticalSection(&cs);

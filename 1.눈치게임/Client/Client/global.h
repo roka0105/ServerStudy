@@ -131,6 +131,7 @@ typedef struct GameInfo
 	bool Next;
 	bool loseresult;
 	int index_count;
+	bool first_check;
 };
 typedef struct RoomInfo
 {
