@@ -5,7 +5,7 @@ void err_quit(char* msg)
 	LPVOID lpmsgbuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, WSAGetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpmsgbuf, 0, NULL);
-	MessageBox(NULL, (LPCTSTR)&lpmsgbuf, msg, MB_ICONERROR);
+	MessageBox(NULL, (LPCTSTR)lpmsgbuf, msg, MB_ICONERROR);
 	LocalFree(lpmsgbuf);
 	exit(-1);
 }
