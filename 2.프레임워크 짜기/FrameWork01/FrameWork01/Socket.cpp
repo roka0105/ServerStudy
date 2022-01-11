@@ -14,21 +14,9 @@ Socket::Socket(const Socket& ref)
 	sock = ref.sock;
 	memcpy(&addr, &ref.addr, sizeof(SOCKADDR_IN));
 }
-SOCKET  Socket::GetSock()
-{
-	return sock;
-}
-void Socket::SetSock(SOCKET s)
-{
-	sock = s;
-}
 SOCKADDR_IN Socket::GetAddr()
 {
 	return addr;
-}
-void Socket::SetAddr(SOCKADDR_IN a)
-{
-	memcpy(&addr, &a, sizeof(SOCKADDR_IN));
 }
 void Socket::err_quit(const char* msg)
 {

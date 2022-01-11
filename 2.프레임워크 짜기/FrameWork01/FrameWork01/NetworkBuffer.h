@@ -7,7 +7,8 @@ public:
 	~NetworkBuffer();
 	bool is_empty();
 	void MemoryZero();
-	char* Data_Pop();
+	const char* Data_Pop();
+	void Data_Push(char* data);
 	int Size_Pop();
 	PROTOCOL GetProtocol();
 	//getprotocol 분리해서 반환하는거 구현하기.(ProtocolPop)

@@ -11,11 +11,12 @@ ClientManager::~ClientManager()
 		client = NULL;
 	}
 }
-void ClientManager::AddClient(NetworkSocket* client_sock)
+ClientInfo* ClientManager::AddClient(SOCKET client_sock,SOCKADDR_IN client_addr)
 {
-	ClientInfo* _client = new ClientInfo(client_sock);
+	ClientInfo* _client = new ClientInfo(client_sock,client_addr);
 	Client[ClientCount] = _client;
 	++ClientCount;
+	return Client[ClientCount - 1];
 }
 void ClientManager::RemoveClient(ClientInfo* client)
 {
@@ -33,8 +34,4 @@ void ClientManager::RemoveClient(ClientInfo* client)
 			break;
 		}
 	}
-}
-ClientInfo* ClientManager::GetClient()
-{
-	return Client[ClientCount - 1];
 }

@@ -12,18 +12,13 @@ void NetWorkProc::Start()
 {
 	InitializeCriticalSection(&cs);
 }
-void NetWorkProc::UpDate()//여기서 메세지 들어오는지 체크해서 메세지 처리까지하기.
+SOCKET NetWorkProc::UpDate(SOCKADDR_IN& output)//여기서 메세지 들어오는지 체크해서 메세지 처리까지하기.
 {
-	ClientSocket = Listen.Accept();
+	SOCKET _sock= Listen.Accept(output);
+	return _sock;
 }
 void NetWorkProc::End()
 {
 	DeleteCriticalSection(&cs);
-	closesocket(Listen.Sock()->GetSock());
 	WSACleanup();
-}
-NetworkSocket* NetWorkProc::GetClientSock()
-{
-	if (ClientSocket != nullptr)
-		return ClientSocket;
 }

@@ -1,7 +1,6 @@
 #include "NetworkSocket.h"
 NetworkSocket::NetworkSocket()
 {
-	sock = new Socket();
 }
 NetworkSocket::NetworkSocket(const NetworkSocket& ref)
 {
@@ -15,14 +14,14 @@ Socket* NetworkSocket::Sock()
 {
 	return sock;
 }
-void NetworkSocket::Send(NetworkBuffer _sendbuf)
+void NetworkSocket::Send(PROTOCOL protocol, char* data, int size)
 {
 	int retval = 0;
 	retval = send(sock->GetSock(), _sendbuf.Data_Pop(), _sendbuf.Size_Pop(), 0);
 	if (retval == SOCKET_ERROR)
 		sock->err_display("send()");
 }
-bool  NetworkSocket::Recv(NetworkBuffer _recvbuf)
+bool  NetworkSocket::Recv(PROTOCOL& protocol, char& data)
 {
 	int retval = 0;
 	int size = 0;

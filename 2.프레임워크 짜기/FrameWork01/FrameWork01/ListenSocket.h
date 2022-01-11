@@ -1,6 +1,6 @@
 #pragma once
 #include "Socket.h"
-class ListenSocket
+class ListenSocket:public Socket
 {
 public:
 	ListenSocket();
@@ -8,9 +8,7 @@ public:
 	void _Socket(int family, int streamtype);
 	void Bind(int family, int ipaddr, int port);
 	void Listen();
-	Socket* Sock();
-	NetworkSocket* Accept();
-private:
-	Socket* sock;
+	SOCKET Accept(SOCKADDR_IN& output_addr);
+
 };
 

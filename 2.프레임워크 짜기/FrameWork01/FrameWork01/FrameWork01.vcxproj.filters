@@ -13,63 +13,72 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Socket">
+      <UniqueIdentifier>{5b4044a3-4c98-495f-bace-e53a9a421494}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Client">
+      <UniqueIdentifier>{923ff014-4c81-4af6-9bba-2642306b34ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{1480733f-79b4-4e54-8db8-a75b5137e7ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ListenSocket.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Socket.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Socket</Filter>
     </ClCompile>
     <ClCompile Include="NetworkSocket.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>소스 파일\Socket</Filter>
     </ClCompile>
     <ClCompile Include="NetworkBuffer.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Socket</Filter>
     </ClCompile>
     <ClCompile Include="ClientInfo.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="NetWorkProc.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Client</Filter>
     </ClCompile>
     <ClCompile Include="ClientManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Manager</Filter>
     </ClCompile>
     <ClCompile Include="ProgramManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWorkProc.cpp">
+      <Filter>소스 파일\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ListenSocket.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="global.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Socket.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Socket</Filter>
     </ClInclude>
     <ClInclude Include="NetworkSocket.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="ListenSocket.h">
+      <Filter>소스 파일\Socket</Filter>
     </ClInclude>
     <ClInclude Include="NetworkBuffer.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Socket</Filter>
     </ClInclude>
     <ClInclude Include="ClientInfo.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Client</Filter>
     </ClInclude>
     <ClInclude Include="NetWorkProc.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ClientManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ProgramManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>소스 파일\Manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

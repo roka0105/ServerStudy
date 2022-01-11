@@ -8,8 +8,7 @@ private:
 public:
 	ClientManager();
 	~ClientManager();
-	void AddClient(NetworkSocket* client_sock);
+	ClientInfo* AddClient(SOCKET client_sock,SOCKADDR_IN client_addr);
 	void RemoveClient(ClientInfo* client);
-	ClientInfo* GetClient();
 };
 
