@@ -51,3 +51,7 @@ NetworkSocket* ListenSocket::Accept()
 	_sock->SetAddr(tempaddr);
 	return client;
 }
+Socket* NetworkSocket::Sock()
+{
+	return sock;
+}

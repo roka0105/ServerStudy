@@ -8,6 +8,7 @@ public:
 	void _Socket(int family, int streamtype);
 	void Bind(int family, int ipaddr, int port);
 	void Listen();
+	Socket* Sock();
 	NetworkSocket* Accept();
 private:
 	Socket* sock;

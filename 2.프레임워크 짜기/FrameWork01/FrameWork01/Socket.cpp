@@ -4,22 +4,6 @@ Socket::Socket()
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	ZeroMemory(&addr, sizeof(SOCKADDR_IN));
 }
-//Socket::Socket(bool islisten)
-//{
-	//if (islisten)
-	//{
-		//sock = socket(AF_INET, SOCK_STREAM, 0);
-		//ZeroMemory(&addr, sizeof(SOCKADDR_IN));
-		//addr.sin_family = AF_INET;
-		//addr.sin_addr.s_addr = htonl(INADDR_ANY);
-		//addr.sin_port = htons(SERVERPORT);
-	//}
-	//else
-	//{
-	//	sock = socket(AF_INET, SOCK_STREAM, 0);
-	//	ZeroMemory(&addr, sizeof(SOCKADDR_IN));
-	//}
-//}
 Socket::Socket(SOCKET _sock, SOCKADDR_IN _addr)
 {
 	sock = _sock;
