@@ -2,26 +2,17 @@
 NetworkSocket::NetworkSocket()
 {
 }
-NetworkSocket::NetworkSocket(const NetworkSocket& ref)
-{
-	memcpy(sock, ref.sock,sizeof(Socket));
-}
 NetworkSocket::~NetworkSocket()
 {
-	sock->~Socket();
-}
-Socket* NetworkSocket::Sock()
-{
-	return sock;
 }
 void NetworkSocket::Send(PROTOCOL protocol, char* data, int size)
 {
 	int retval = 0;
-	retval = send(sock->GetSock(), _sendbuf.Data_Pop(), _sendbuf.Size_Pop(), 0);
+	retval = send(sock, sendbuf.Data_Pop(), sendbuf.Size_Pop(), 0);
 	if (retval == SOCKET_ERROR)
-		sock->err_display("send()");
+		this->err_display("send()");
 }
-bool  NetworkSocket::Recv(PROTOCOL& protocol, char& data)
+bool  NetworkSocket::Recv(PROTOCOL& protocol, char* data)
 {
 	int retval = 0;
 	int size = 0;
@@ -29,11 +20,14 @@ bool  NetworkSocket::Recv(PROTOCOL& protocol, char& data)
 	if (retval == SOCKET_ERROR)
 		return false;
 	else if (retval == 0)return false;
-	retval = recvn(_recvbuf.Data_Pop(), size, 0);
+	char buf[MAXBUF];
+	ZeroMemory(buf, MAXBUF);
+	retval = recvn(buf, size, 0);
 	if (retval == SOCKET_ERROR)
 		return false;
 	else if (retval == 0)return false;
 
+	this->recvbuf.Data_Push(buf);
 	return true;
 }
 int NetworkSocket::recvn(char* buf, int len,bool flag)
@@ -43,7 +37,7 @@ int NetworkSocket::recvn(char* buf, int len,bool flag)
 	int left = len;
 	while (left > 0)
 	{
-		received = recv(sock->GetSock(), ptr, left, flag);
+		received = recv(sock, ptr, left, flag);
 		if (received == SOCKET_ERROR)return SOCKET_ERROR;
 		else if (received == 0) return 0;
 		left -= received;

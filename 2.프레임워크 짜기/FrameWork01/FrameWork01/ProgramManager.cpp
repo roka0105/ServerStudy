@@ -1,7 +1,18 @@
 #include "ProgramManager.h"
-void ProgramManager::MainThread()
+ProgramManager::ProgramManager()
+{
+	CALL_Program.insert({ STATE::MAIN,&SystemFuntion::MainProgram });
+	CALL_Program.insert({ STATE::LOGIN,&SystemFuntion::LoginProgram });
+	CALL_Program.insert({ STATE::JOIN,&SystemFuntion::JoinProgram });
+	Program_mem.This = nullptr;
+	Program_mem.client = nullptr;
+}
+ProgramManager::~ProgramManager()
 {
 
+}
+void ProgramManager::MainThread()
+{
 	if (!NetWork_Manager.Init())//네트워크 초기화
 		return;
 	NetWork_Manager.Start();//프로그램 시작.
@@ -28,7 +39,36 @@ void ProgramManager::ClientThread()
 		Client_Manager.RemoveClient(Program_mem.client);
 	else CloseHandle(hThread);
 }
+void ProgramManager::NetworkThread()
+{
+	HANDLE hThread;
+	hThread = CreateThread(0, NULL, NetWork_Thread, &Program_mem, 0, NULL);
+	if (hThread == NULL)
+		Client_Manager.RemoveClient(Program_mem.client);
+	else CloseHandle(hThread);
+}
 DWORD CALLBACK ProgramManager::Client_Thread(LPVOID arg)
 {
 	ProgramMember* m_Program = (ProgramMember*)arg;
+	ClientInfo* client = m_Program->client;
+	m_Program->This->NetworkThread();
+	int* state = new int;
+	*state = (int)STATE::MAIN;
+	while (1)
+	{
+		//if(!client->recvbuf.is_empty())
+		m_Program->This->CALL_Program[(STATE)*state](client,state);
+		//임시로 넣은거고 나중에 종료조건 하기
+		return 0;
+	}
+}
+DWORD CALLBACK ProgramManager::NetWork_Thread(LPVOID arg)
+{
+	ProgramMember* m_Program = (ProgramMember*)arg;
+	ClientInfo* client = m_Program->client;
+	while (1)
+	{
+		//임시로 넣은거고 나중에 종료조건 하기
+		return 0;
+	}
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "global.h"
+#include "ListenSocket.h"
 class NetWorkProc
 {
 public:

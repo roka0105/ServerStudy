@@ -1,4 +1,4 @@
-#include "global.h"
+#include "ProgramManager.h"
 int main(int argv,char*argc[])
 {
 	ProgramManager Program_Manager;

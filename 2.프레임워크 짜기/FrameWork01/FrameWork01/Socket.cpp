@@ -33,7 +33,8 @@ void Socket::err_display(const char* msg)
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, WSAGetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpmsgbuf, 0, NULL);
 	MessageBox(NULL, (LPCTSTR)lpmsgbuf, (LPCTSTR)msg, MB_ICONERROR);
-	printf("[%s]%s", (LPCTSTR)msg, lpmsgbuf);
+	//printf("[%s]%s", (LPCTSTR)msg, lpmsgbuf);
+	cout << '[' << msg << ']' << lpmsgbuf;
 	LocalFree(lpmsgbuf);
 }
 Socket::~Socket()

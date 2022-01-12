@@ -2,6 +2,7 @@
 #pragma comment (lib,"ws2_32")
 #include <winsock2.h>
 #include <iostream>
+#include <stdlib.h>
 #include <map>
 
 
@@ -9,21 +10,35 @@
 #define MAXBUF 4026
 #define MAXPERSONNEL 100
 
-
-#include "ListenSocket.h"
-#include "NetworkSocket.h"
-#include "NetworkBuffer.h"
-#include "NetWorkProc.h"
-#include "ClientInfo.h"
-#include "ClientManager.h"
-#include "ProgramManager.h"
 using namespace std;
-
-enum PROTOCOL
+enum class STATE
 {
-	None=-1,
+	NONE = -1,
+
+	MAIN,
+	LOGIN,
+	JOIN,
+
+	MAX
+};
+enum class PROTOCOL
+{
+	None = -1,
 	LOGININFO,
 	LOGOUT,
 	LOGINRESULT,
+	JOININFO,
+	JOINRESULT,
 	Max
 };
+
+//#include "ListenSocket.h"
+//#include "NetworkSocket.h"
+//#include "NetworkBuffer.h"
+//#include "NetWorkProc.h"
+//#include "ClientInfo.h"
+//#include "ClientManager.h"
+//#include "ProgramManager.h"
+//#include "LoginManager.h"
+//#include "SystemFuntion.h"
+

@@ -1,7 +1,6 @@
 #include "ListenSocket.h"
 ListenSocket::ListenSocket()
 {
-	Socket();
 }
 ListenSocket::~ListenSocket()
 {

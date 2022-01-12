@@ -1,11 +1,11 @@
 #pragma once
-#include "global.h"
+#include "NetworkSocket.h"
 class ClientInfo:public NetworkSocket
 {
 public:
 	ClientInfo();
 	ClientInfo(SOCKET clientsock,SOCKADDR_IN clientaddr);
-	ClientInfo(const ClientInfo& ref);
+	ClientInfo(ClientInfo& ref);
 	~ClientInfo();
 };
 
