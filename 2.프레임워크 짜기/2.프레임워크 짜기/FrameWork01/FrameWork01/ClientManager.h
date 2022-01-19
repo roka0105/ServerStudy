@@ -4,6 +4,7 @@ class ClientManager
 {
 private:
 	static ClientManager* instance;
+	
 	ClientInfo* Client[MAXPERSONNEL];
 	int ClientCount;
 protected:
@@ -12,6 +13,8 @@ protected:
 	
 public:
 	static ClientManager* Instance();
+	static void Create();
+	static void Destroy();
 	ClientInfo* AddClient(SOCKET client_sock,SOCKADDR_IN client_addr);
 	void RemoveClient(ClientInfo* client);
 };

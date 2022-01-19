@@ -10,12 +10,16 @@ class FuntionManager
 {
 private:
 	static FuntionManager* instance;
-	MainMenuManager* menu_manager;
+	bool is_EndProgram;
 public:
-	void InitManager();
 	void MenuSelect(HINSTANCE ins,ClientInfo* client);
 	void MenuResult(HINSTANCE ins,ClientInfo* client);
+	void MenuEnd(HINSTANCE ins, ClientInfo* client);
+	bool Is_EndProgram();
+	void Set_IsEndProgram(bool flag);
 	static FuntionManager* Instance();
+	static void Create();
+	static void Destroy();
 private:
 	FuntionManager();
 	~FuntionManager();

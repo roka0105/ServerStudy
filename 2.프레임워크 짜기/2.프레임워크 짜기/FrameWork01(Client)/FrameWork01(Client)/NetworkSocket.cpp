@@ -5,10 +5,10 @@ NetworkSocket::NetworkSocket()
 NetworkSocket::~NetworkSocket()
 {
 }
-void NetworkSocket::Send()
+void NetworkSocket::Send(const char* sendbuf,int size)
 {
 	int retval = 0;
-	retval = send(sock, sendbuf.Data_Pop(), sendbuf.Size_Pop(), 0);
+	retval = send(sock, sendbuf, size, 0);
 	if (retval == SOCKET_ERROR)
 		this->err_display("send()");
 }

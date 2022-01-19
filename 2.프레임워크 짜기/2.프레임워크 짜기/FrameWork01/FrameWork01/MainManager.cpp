@@ -2,11 +2,15 @@
 MainManager* MainManager::instance = nullptr;
 MainManager* MainManager::Instance()
 {
-	if (instance == NULL)
-	{
-		instance = new MainManager();
-	}
 	return instance;
+}
+void MainManager::Create()
+{
+		instance = new MainManager();
+}
+void MainManager::Destroy()
+{
+
 }
 void MainManager::MainProgram(ClientInfo* _client, STATE& _state)
 {
@@ -18,8 +22,8 @@ void MainManager::MainProgram(ClientInfo* _client, STATE& _state)
 	ZeroMemory(buf, MAXBUF);
 
 	_client->sendbuf.MemoryZero();
-	_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
-	_client->Send();
+	size=_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
+	_client->Send(_client->sendbuf.Data_Pop(),size);
 
 	_client->recvbuf.MemoryZero();
 	if (!_client->Recv())

@@ -6,19 +6,25 @@ class MainMenuManager
 private:
 	struct MainDialogMem
 	{
-		MainDialogMem(MainMenuManager* obj1, ClientInfo* obj2);
+		MainDialogMem(MainMenuManager* obj1, ClientInfo* obj2)
+		{
+			This = obj1;
+			Client = obj2;
+		}
 		MainMenuManager* This;
 		ClientInfo* Client;
 	};
-	MainDialogMem* dialog_param;
 	static MainMenuManager* instance;
 	NetworkBuffer tempbuf[MAXBUF];
 public:
 	static MainMenuManager* Instance();
+	static void Create();
+	static void Destroy();
 	void MenuSelect(HINSTANCE ins, ClientInfo* client);
 	void ShowResult(HINSTANCE ins, ClientInfo* client);
+	bool EndProgram();
 private:
-	void UnPackPacket(const char* buffer,int size);
+	void UnPackPacket(const char* buffer, int size);
 	void PackPacket(int& menunumber);
 	MainMenuManager();
 	~MainMenuManager();

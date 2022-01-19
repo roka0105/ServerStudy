@@ -16,3 +16,9 @@ int main(int argv,char*argc[])
 *     수행할때 unpack으로 menu 번호를 받아오도록 할때 mainprogram이 static이기 때문에 unpack멤버함수를 사용 할 수 없음
 * 2.구조체를 바이너리화 해서 전송 하고 싶습니다.
 */
+/*
+* 내일 할 것
+* 1.buffer sizepush 구현하고 sizepop 수정하기 (클라 참고)
+* 2.Main UnPackPacket => 메뉴 번호 받아오는거 구현하기.
+* 3.state 변경.
+*/

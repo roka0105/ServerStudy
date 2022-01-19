@@ -2,19 +2,37 @@
 MainMenuManager* MainMenuManager::instance = nullptr;
 MainMenuManager* MainMenuManager::Instance()
 {
-	if (instance == NULL)
-	{
-		instance = new MainMenuManager();
-	}
 	return instance;
+}
+void MainMenuManager::Create()
+{
+	instance = new MainMenuManager();
+}
+void MainMenuManager::Destroy()
+{
+	delete instance;
 }
 void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 {
-	dialog_param = new MainDialogMem(this,client);
-	//DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1);
-	DialogBoxParam(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1,(LPARAM)dialog_param);
+	MainDialogMem* dialog_param = new MainDialogMem(this, client);
+	int menu_number =0;
+	int retval = DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1);
+	if (retval == IDCANCEL || retval == WM_CLOSE)
+	{
+		client->sendbuf.PackPacket(PROTOCOL::ENDPROGRAM);
+		return;
+	}
+	menu_number = retval-11;
+	this->PackPacket(menu_number);
+	int size=client->sendbuf.PackPacket
+	(PROTOCOL::MENU_RESULT, this->tempbuf->Data_Pop(), this->tempbuf->Size_Pop());
+	client->Send(client->sendbuf.Data_Pop(), size);
 }
-void  MainMenuManager::ShowResult(HINSTANCE ins,ClientInfo* client)
+bool MainMenuManager::EndProgram()
+{
+	return true;
+}
+void  MainMenuManager::ShowResult(HINSTANCE ins, ClientInfo* client)
 {
 	tempbuf->MemoryZero();
 	UnPackPacket(client->recvbuf.Data_Pop(), client->recvbuf.Size_Pop());
@@ -36,22 +54,16 @@ void MainMenuManager::PackPacket(int& menunumber)
 	char* ptr = buf;
 	memcpy(ptr, &menunumber, sizeof(int));
 	ptr = buf;
-
+	tempbuf->Size_Push(sizeof(int));
 	tempbuf->Data_Push(ptr);
 
 }
 INT_PTR CALLBACK MainMenuManager::DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	int menu_number = 0;
-	MainDialogMem* dialogmem;
-	ClientInfo* client;
-	MainMenuManager* main_manager;
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-		dialogmem = (MainDialogMem*)lParam;
-		client = dialogmem->Client;
-		main_manager = dialogmem->This;
 		return TRUE;
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
@@ -59,26 +71,34 @@ INT_PTR CALLBACK MainMenuManager::DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, 
 		case IDOK:
 			if (IsDlgButtonChecked(hDlg, IDC_RADIO1) == BST_CHECKED)
 			{
-				menu_number = 1;
+				menu_number = 12;
 			}
 			else if (IsDlgButtonChecked(hDlg, IDC_RADIO2) == BST_CHECKED)
 			{
-				menu_number = 2;
+				menu_number = 13;
 			}
 			else if (IsDlgButtonChecked(hDlg, IDC_RADIO3) == BST_CHECKED)
 			{
-				menu_number = 3;
+				menu_number = 14;
 			}
-			main_manager->PackPacket(menu_number);
-			client->sendbuf.PackPacket
-			(MENU_RESULT, main_manager->tempbuf->Data_Pop(), main_manager->tempbuf->Size_Pop());
+			EndDialog(hDlg,menu_number);
 			return TRUE;
 		case IDCANCEL:
+			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
 		return FALSE;
 	case WM_CLOSE:
+		EndDialog(hDlg, WM_CLOSE);
 		return TRUE;
 	}
 	return FALSE;
+}
+MainMenuManager::MainMenuManager()
+{
+
+}
+MainMenuManager::~MainMenuManager()
+{
+
 }

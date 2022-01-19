@@ -2,11 +2,19 @@
 ClientManager* ClientManager::instance = nullptr;
 ClientManager*ClientManager::Instance()
 {
+	
+	return instance;
+}
+void ClientManager::Create()
+{
 	if (instance == NULL)
 	{
 		instance = new ClientManager();
 	}
-	return instance;
+}
+void ClientManager::Destroy()
+{
+	delete instance;
 }
 ClientManager::ClientManager()
 {

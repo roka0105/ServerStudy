@@ -7,7 +7,8 @@ private:
 	MainManager* Main;
 public:
 	static SystemFuntion* Instance();
-	void ManagerInit();
+	static void Create();
+	static void Destroy();
 	void MainMenu(ClientInfo* client,STATE& state);
 	void LoginMenu(ClientInfo* client, STATE& state);
 	void JoinMenu(ClientInfo* client, STATE& state);

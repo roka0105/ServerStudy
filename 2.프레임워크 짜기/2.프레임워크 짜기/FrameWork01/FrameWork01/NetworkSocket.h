@@ -9,7 +9,7 @@ public:
 public:
 	NetworkSocket();
 	virtual ~NetworkSocket();
-	void Send();
+	void Send(const char* _sendbuf,int size);
 	bool Recv();
 private:
 	int recvn(char* buf, int len, bool flag);

@@ -5,7 +5,8 @@ ClientInfo::ClientInfo()
 }
 ClientInfo::ClientInfo(SOCKET clientsock, SOCKADDR_IN clientaddr)
 {
-	Socket(clientsock, clientaddr);
+	sock = clientsock;
+	memcpy(&addr, &clientaddr, sizeof(SOCKADDR_IN));
 }
 ClientInfo::ClientInfo(ClientInfo& ref)
 {

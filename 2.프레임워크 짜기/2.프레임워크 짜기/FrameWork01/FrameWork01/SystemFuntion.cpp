@@ -2,17 +2,34 @@
 SystemFuntion* SystemFuntion::instance=nullptr;
 SystemFuntion* SystemFuntion::Instance()
 {
-	if (instance == NULL)
-	{
-		instance = new SystemFuntion();
-	}
 	return instance;
 }
-void SystemFuntion::ManagerInit()
+void SystemFuntion::Create()
 {
-	Main = MainManager::Instance();
+	instance = new SystemFuntion();
+	MainManager::Create();
+}
+void SystemFuntion::Destroy()
+{
+
 }
 void SystemFuntion::MainMenu(ClientInfo* client,STATE& state)
 {
-	Main->MainProgram(client, state);
+	MainManager::Instance()->MainProgram(client, state);
+}
+void SystemFuntion::LoginMenu(ClientInfo* client, STATE& state)
+{
+
+}
+void SystemFuntion::JoinMenu(ClientInfo* client, STATE& state)
+{
+
+}
+SystemFuntion::SystemFuntion()
+{
+
+}
+SystemFuntion::~SystemFuntion()
+{
+
 }

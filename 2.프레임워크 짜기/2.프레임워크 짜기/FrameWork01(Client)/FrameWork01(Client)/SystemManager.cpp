@@ -1,33 +1,53 @@
 #include "SystemManager.h"
-
+SystemManager* SystemManager::instance = nullptr;
+SystemManager* SystemManager::Instance()
+{
+	return instance;
+}
+void SystemManager::Create()
+{
+	instance = new SystemManager();
+	NetWorkProgram::Create();
+	FuntionManager::Create();
+}
+void SystemManager::Destroy()
+{
+	FuntionManager::Destroy();
+	NetWorkProgram::Destroy();
+	delete instance;
+}
 void SystemManager::Init(HINSTANCE hInstance)
 {
 	hInst = hInstance;
-	Network = NetWorkProgram::Instance();
-	Network->Init();
-	Client=Network->Connect();
+	NetWorkProgram::Instance()->Init();
+	Client= NetWorkProgram::Instance()->Connect();
+	
+	ProtocolMapInit();
 	//각종 이벤트 초기화
 }
 void SystemManager::ProtocolMapInit()
 {
-	Funcmanager = FuntionManager::Instance();
-	protocolFunction[MENU_SELECT] = &FuntionManager::MenuSelect;
-	protocolFunction[MENU_RESULT] = &FuntionManager::MenuResult;
+	protocolFunction[PROTOCOL::MENU_SELECT] = &FuntionManager::MenuSelect;
+	protocolFunction[PROTOCOL::MENU_RESULT] = &FuntionManager::MenuResult;
 }
 void SystemManager::Start()
 {
-	hThread[0] = CreateThread(NULL, 0, NetWorkProgram::SendThread, Client, 0, NULL);
-	hThread[1] = CreateThread(NULL, 0, NetWorkProgram::RecvThread, Client, 0, NULL);
+	//hThread[0] = CreateThread(NULL, 0, NetWorkProgram::SendThread, Client, 0, NULL);
+	hThread[0] = CreateThread(NULL, 0, NetWorkProgram::RecvThread, Client, 0, NULL);
 	PROTOCOL protocol;
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	while (1)
 	{
+		if (FuntionManager::Instance()->Is_EndProgram())
+		{
+			return;
+		}
 		if (!Client->recvbuf.is_empty())
 		{
 			Client->recvbuf.UnPackPacket(protocol);
 			//함수포인터
-			(Funcmanager->*protocolFunction[protocol])
+			(FuntionManager::Instance()->*protocolFunction[protocol])
 				(hInst,Client);
 		}
 	}
@@ -36,6 +56,14 @@ void SystemManager::End()
 {
 	//핸들들 반환
 
-	Network->End();
+	NetWorkProgram::Instance()->End();
 	return;
+}
+SystemManager::SystemManager()
+{
+
+}
+SystemManager::~SystemManager()
+{
+
 }

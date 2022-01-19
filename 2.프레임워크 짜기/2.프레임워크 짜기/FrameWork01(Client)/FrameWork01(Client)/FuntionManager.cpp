@@ -2,25 +2,43 @@
 FuntionManager* FuntionManager::instance = nullptr;
 FuntionManager* FuntionManager::Instance()
 {
-	if (instance == NULL)
-	{
-		instance = new FuntionManager();
-	}
 	return instance;
 }
-FuntionManager::FuntionManager()
+void FuntionManager::Create()
 {
-	InitManager();
+	instance = new FuntionManager();
+	MainMenuManager::Create();
 }
-void FuntionManager::InitManager()
+void FuntionManager::Destroy()
 {
-	menu_manager = MainMenuManager::Instance();
+	MainMenuManager::Destroy();
+	delete instance;
 }
 void FuntionManager::MenuSelect(HINSTANCE ins,ClientInfo* client)
 {
-	menu_manager->MenuSelect(ins,client);
+	MainMenuManager::Instance()->MenuSelect(ins,client);
 }
 void FuntionManager::MenuResult(HINSTANCE ins,ClientInfo*client)
 {
-	menu_manager->ShowResult(ins,client);
+	MainMenuManager::Instance()->ShowResult(ins,client);
+}
+void FuntionManager::MenuEnd(HINSTANCE ins, ClientInfo* client)
+{
+	is_EndProgram = MainMenuManager::Instance()->EndProgram();
+}
+void FuntionManager::Set_IsEndProgram(bool flag)
+{
+	is_EndProgram = flag;
+}
+bool FuntionManager::Is_EndProgram()
+{
+	return is_EndProgram;
+}
+FuntionManager::FuntionManager()
+{
+	is_EndProgram = false;
+}
+FuntionManager::~FuntionManager()
+{
+
 }

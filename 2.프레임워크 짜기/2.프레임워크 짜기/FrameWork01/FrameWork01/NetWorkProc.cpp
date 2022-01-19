@@ -2,11 +2,16 @@
 NetWorkProc* NetWorkProc::instance = nullptr;
 NetWorkProc* NetWorkProc::Instance()
 {
-	if (instance == NULL)
-	{
-		instance = new NetWorkProc();
-	}
+	
 	return instance;
+}
+void NetWorkProc::Create()
+{
+	instance = new NetWorkProc();
+}
+void NetWorkProc::Destroy()
+{
+	delete instance;
 }
 bool NetWorkProc::Init()
 {   

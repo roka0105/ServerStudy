@@ -29,8 +29,22 @@ void NetworkBuffer::Data_Push(char* data)
 }
 int NetworkBuffer::Size_Pop()
 {
-	int strsize = strlen(buf);
-	return strsize;
+	return size;
+}
+void NetworkBuffer::Size_Push(int _size)
+{
+	size = _size;
+}
+int NetworkBuffer::PackPacket(PROTOCOL protocol)
+{
+	char* ptr = buf + sizeof(int);
+	int size = 0;
+	memcpy(ptr, &protocol, sizeof(PROTOCOL));
+	size += sizeof(PROTOCOL);
+	ptr = buf;
+	memcpy(ptr, &size, sizeof(int));
+	size += sizeof(int);
+	return size;
 }
 int NetworkBuffer::PackPacket(PROTOCOL protocol,const char* data, int size)
 {
