@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\Client">
+      <UniqueIdentifier>{18588929-21b5-46b5-a04b-23c4855f659d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Socket">
+      <UniqueIdentifier>{f8ab1c0c-6a82-48ac-9b55-0378c267cac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Proccess">
+      <UniqueIdentifier>{36062f08-0638-4981-a2da-45d69893a927}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NetWorkProgram.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInfo.h">
+      <Filter>소스 파일\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkBuffer.h">
+      <Filter>소스 파일\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>소스 파일\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkSocket.h">
+      <Filter>소스 파일\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuManager.h">
+      <Filter>소스 파일\Proccess</Filter>
+    </ClInclude>
+    <ClInclude Include="FuntionManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NetWorkProgram.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientInfo.cpp">
+      <Filter>소스 파일\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkBuffer.cpp">
+      <Filter>소스 파일\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>소스 파일\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkSocket.cpp">
+      <Filter>소스 파일\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenuManager.cpp">
+      <Filter>소스 파일\Proccess</Filter>
+    </ClCompile>
+    <ClCompile Include="FuntionManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FrameWork01(Client).rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
