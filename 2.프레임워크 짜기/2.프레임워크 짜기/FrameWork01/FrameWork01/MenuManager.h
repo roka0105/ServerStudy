@@ -1,17 +1,16 @@
 #pragma once
 #include "global.h"
 #include "ClientInfo.h"
-class MainManager
+class MenuManager
 {
 private:
-	static MainManager* instance;
+	static MenuManager* instance;
 public:
-	static MainManager* Instance();
+	static MenuManager* Instance();
 	static void Create();
 	static void Destroy();
 	void MainProgram(ClientInfo* _client, STATE& _state);
 private:
 	void UnPackPacket(const char* recvbuf,int& menu_number);
-	void PackPacket(char* sendbuf, char* data);
 };
 

@@ -1,10 +1,10 @@
 #pragma once
-#include "MainManager.h"
+#include "MenuManager.h"
+#include "LoginManager.h"
 class SystemFuntion
 {
 private:
 	static SystemFuntion* instance;
-	MainManager* Main;
 public:
 	static SystemFuntion* Instance();
 	static void Create();

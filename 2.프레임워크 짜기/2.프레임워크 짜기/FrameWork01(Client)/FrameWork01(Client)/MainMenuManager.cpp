@@ -14,8 +14,9 @@ void MainMenuManager::Destroy()
 }
 void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 {
-	MainDialogMem* dialog_param = new MainDialogMem(this, client);
+	//MainDialogMem* dialog_param = new MainDialogMem(this, client);
 	int menu_number =0;
+	client->recvbuf.MemoryZero();
 	int retval = DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1);
 	if (retval == IDCANCEL || retval == WM_CLOSE)
 	{
@@ -25,8 +26,9 @@ void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 	menu_number = retval-11;
 	this->PackPacket(menu_number);
 	int size=client->sendbuf.PackPacket
-	(PROTOCOL::MENU_RESULT, this->tempbuf->Data_Pop(), this->tempbuf->Size_Pop());
+	(PROTOCOL::MENU_RESULT, this->tempbuf.Data_Pop(), this->tempbuf.Size_Pop());
 	client->Send(client->sendbuf.Data_Pop(), size);
+	
 }
 bool MainMenuManager::EndProgram()
 {
@@ -34,18 +36,21 @@ bool MainMenuManager::EndProgram()
 }
 void  MainMenuManager::ShowResult(HINSTANCE ins, ClientInfo* client)
 {
-	tempbuf->MemoryZero();
+	tempbuf.MemoryZero();
 	UnPackPacket(client->recvbuf.Data_Pop(), client->recvbuf.Size_Pop());
-	MessageBox(NULL, L"입장불가", (LPCWSTR)tempbuf->Data_Pop(), MB_OK);
+	MessageBox(NULL, tempbuf.Data_Pop(), "입장불가", MB_OK);
+	client->recvbuf.MemoryZero();
 }
 void MainMenuManager::UnPackPacket(const char* buffer, int size)
 {
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	const char* ptr = buffer + sizeof(PROTOCOL);
-	int _size = size - sizeof(PROTOCOL);
+	int _size = 0;
+	memcpy(&_size, ptr, sizeof(int));
+	ptr += sizeof(int);
 	memcpy(buf, ptr, _size);
-	tempbuf->Data_Push(buf);
+	tempbuf.Data_Push(buf);
 }
 void MainMenuManager::PackPacket(int& menunumber)
 {
@@ -54,8 +59,8 @@ void MainMenuManager::PackPacket(int& menunumber)
 	char* ptr = buf;
 	memcpy(ptr, &menunumber, sizeof(int));
 	ptr = buf;
-	tempbuf->Size_Push(sizeof(int));
-	tempbuf->Data_Push(ptr);
+	tempbuf.Size_Push(sizeof(int));
+	tempbuf.Data_Push(ptr);
 
 }
 INT_PTR CALLBACK MainMenuManager::DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)

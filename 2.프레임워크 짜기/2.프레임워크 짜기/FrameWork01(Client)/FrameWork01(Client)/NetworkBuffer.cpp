@@ -27,6 +27,10 @@ void NetworkBuffer::Data_Push(char* data)
 	int strsize = strlen(data);
 	memcpy(buf, data, strsize);
 }
+void NetworkBuffer::Data_Push(char* data, int size)
+{
+	memcpy(buf, data, size);
+}
 int NetworkBuffer::Size_Pop()
 {
 	return size;

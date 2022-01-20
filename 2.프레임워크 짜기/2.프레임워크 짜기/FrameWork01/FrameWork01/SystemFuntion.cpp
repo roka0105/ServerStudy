@@ -7,23 +7,26 @@ SystemFuntion* SystemFuntion::Instance()
 void SystemFuntion::Create()
 {
 	instance = new SystemFuntion();
-	MainManager::Create();
+	MenuManager::Create();
+	LoginManager::Create();
 }
 void SystemFuntion::Destroy()
 {
-
+	LoginManager::Destroy();
+	MenuManager::Destroy();
+	delete instance;
 }
 void SystemFuntion::MainMenu(ClientInfo* client,STATE& state)
 {
-	MainManager::Instance()->MainProgram(client, state);
+	MenuManager::Instance()->MainProgram(client, state);
 }
 void SystemFuntion::LoginMenu(ClientInfo* client, STATE& state)
 {
-
+	LoginManager::Instance()->LoginProgram(client, state);
 }
 void SystemFuntion::JoinMenu(ClientInfo* client, STATE& state)
 {
-
+	LoginManager::Instance()->JoinProgram(client, state);
 }
 SystemFuntion::SystemFuntion()
 {

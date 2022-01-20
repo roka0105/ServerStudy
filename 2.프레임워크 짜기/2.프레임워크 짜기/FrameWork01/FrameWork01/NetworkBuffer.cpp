@@ -22,6 +22,10 @@ const char* NetworkBuffer::Data_Pop()
 {
 	return buf;
 }
+void NetworkBuffer::Data_Push(char* data,int size)
+{
+	memcpy(buf, data, size);
+}
 void NetworkBuffer::Data_Push(char* data)
 {
 	int strsize = strlen(data);
@@ -29,8 +33,11 @@ void NetworkBuffer::Data_Push(char* data)
 }
 int NetworkBuffer::Size_Pop()
 {
-	int strsize = strlen(buf);
-	return strsize;
+	return size;
+}
+void NetworkBuffer::Size_Push(int number)
+{
+	size = number;
 }
 int NetworkBuffer::PackPacket(PROTOCOL protocol)
 {

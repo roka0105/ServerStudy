@@ -9,6 +9,7 @@ public:
 	void MemoryZero();
 	const char* Data_Pop();
 	void Data_Push(char* data);
+	void Data_Push(char* data, int size);
 	int Size_Pop();
 	void Size_Push(int _size);
 	int PackPacket(PROTOCOL protocol);

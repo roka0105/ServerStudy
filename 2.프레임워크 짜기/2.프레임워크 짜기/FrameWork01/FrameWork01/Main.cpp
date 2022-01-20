@@ -12,13 +12,13 @@ int main(int argv,char*argc[])
 *     이렇게 작성해야하는데 클래스를 특정 지으면 다른 클래스는 또 함수포인터 따로 만들어야하는 문제로 인해 
 *     static 멤버함수로 구현했습니다.
 *   =>하지만 해당 기능 매니저에서 unpackpacket을 구현 후 필요한 데이터 언팩 처리를 위한 함수를 사용하려 할 때
-*     해당 프로그램이 static으로 선언되어있어 예를들어 mainmanager 의 mainprogram 함수에서 메인메뉴 기능을
+*     해당 프로그램이 static으로 선언되어있어 예를들어 MenuManager 의 mainprogram 함수에서 메인메뉴 기능을
 *     수행할때 unpack으로 menu 번호를 받아오도록 할때 mainprogram이 static이기 때문에 unpack멤버함수를 사용 할 수 없음
 * 2.구조체를 바이너리화 해서 전송 하고 싶습니다.
 */
 /*
 * 내일 할 것
 * 1.buffer sizepush 구현하고 sizepop 수정하기 (클라 참고)
-* 2.Main UnPackPacket => 메뉴 번호 받아오는거 구현하기.
+* 2.Mainmenu UnPackPacket => 메뉴 번호 받아오는거 구현하기.
 * 3.state 변경.
 */

@@ -63,6 +63,5 @@ DWORD CALLBACK ProgramManager::Client_Thread(LPVOID arg)
 	while (1)
 	{
 		(menu_funtion->*(Program_manager->CALL_Program[state]))(client,state);
-		return 0;
 	}
 }

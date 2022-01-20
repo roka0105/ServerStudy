@@ -11,6 +11,15 @@
 #define SERVERIP "127.0.0.1"
 
 using namespace std;
+enum class MENU
+{  
+	None=-1,
+	MAIN = 0,
+	LOGIN,
+	JOIN,
+	END,
+	MAX
+};
 enum class STATE
 {
 	NONE = -1,
@@ -19,6 +28,7 @@ enum class STATE
 	LOGIN,
 	JOIN,
 	EXIT,
+	END,
 	MAX
 };
 enum class PROTOCOL

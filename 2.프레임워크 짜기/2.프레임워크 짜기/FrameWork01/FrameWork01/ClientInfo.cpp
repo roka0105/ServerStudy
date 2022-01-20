@@ -1,10 +1,11 @@
 #include "ClientInfo.h"
 ClientInfo::ClientInfo()
 {  
-
+	userInfo = new UserInfo();
 }
 ClientInfo::ClientInfo(SOCKET clientsock, SOCKADDR_IN clientaddr)
 {
+	userInfo = new UserInfo();
 	sock = clientsock;
 	memcpy(&addr, &clientaddr, sizeof(SOCKADDR_IN));
 }
@@ -23,4 +24,8 @@ ClientInfo::ClientInfo(ClientInfo& ref)
 ClientInfo::~ClientInfo()
 {
 	
+}
+UserInfo* ClientInfo::GetUserInfo()
+{
+	return userInfo;
 }

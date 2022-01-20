@@ -15,7 +15,7 @@ private:
 		ClientInfo* Client;
 	};
 	static MainMenuManager* instance;
-	NetworkBuffer tempbuf[MAXBUF];
+	NetworkBuffer tempbuf;
 public:
 	static MainMenuManager* Instance();
 	static void Create();

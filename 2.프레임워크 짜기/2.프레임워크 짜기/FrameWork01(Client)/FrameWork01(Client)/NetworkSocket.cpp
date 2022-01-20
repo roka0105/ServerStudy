@@ -27,7 +27,8 @@ bool  NetworkSocket::Recv()
 		return false;
 	else if (retval == 0)return false;
 
-	this->recvbuf.Data_Push(buf);
+	this->recvbuf.Data_Push(buf,size);
+	this->recvbuf.Size_Push(size);
 	return true;
 }
 int NetworkSocket::recvn(char* buf, int len,bool flag)
