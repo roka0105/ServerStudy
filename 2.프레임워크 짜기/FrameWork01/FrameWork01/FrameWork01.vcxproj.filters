@@ -25,6 +25,9 @@
     <Filter Include="소스 파일\Singleton">
       <UniqueIdentifier>{9ee9cd1d-6e46-4111-baa4-f276198a07ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\STL">
+      <UniqueIdentifier>{f8ff0243-8bbb-4acf-a723-bd7ea9c9da05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -66,6 +69,9 @@
     <ClCompile Include="MenuManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="_List.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global.h">
@@ -106,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="MenuManager.h">
       <Filter>소스 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="_List.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
