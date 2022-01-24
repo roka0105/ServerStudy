@@ -8,6 +8,10 @@
 //매개변수를 한개만 넣으면 후위,안넣으면 전위,둘다 넣으면 후위로할지 전위로할지 지정할 수 있는것 같다.
 //2.
 //cout << 연산을 위한 operator는 ostream으로 선언한 참조매개변수에 넣고 return 한 os를 main의 cout이 처리한다.
+//3.
+// operator <<에 friend를 한 이유는 intList내부에서 사용시에는 node관련 변수,함수가 public이지만 외부에서
+// 접근시 private가 되도록 설정해 놨기 때문인것같다. 그래서 intList 멤버 함수에 friend로 operator<<를 구현하여
+// 접근이 가능토록 했다. friend는 공유하는 느낌.
 int main()
 {
 	_List<int> intList;
