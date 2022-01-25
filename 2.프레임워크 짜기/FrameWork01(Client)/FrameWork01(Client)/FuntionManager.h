@@ -1,5 +1,6 @@
 #pragma once
 #include "MainMenuManager.h"
+#include "LoginManager.h"
 /*
 #define PROTOCOL_FUNTION_DECLARE(protocol_name)\
 void protocolFuntion_##protocol_name(int data_size,char*buffer);
@@ -15,6 +16,10 @@ public:
 	void MenuSelect(HINSTANCE ins,ClientInfo* client);
 	void MenuResult(HINSTANCE ins,ClientInfo* client);
 	void MenuEnd(HINSTANCE ins, ClientInfo* client);
+	void LoginInfo(HINSTANCE ins, ClientInfo* client);
+	void LoginResult(HINSTANCE ins, ClientInfo* client);
+	void JoinInfo(HINSTANCE ins, ClientInfo* client);
+	void JoinResult(HINSTANCE ins, ClientInfo* client);
 	bool Is_EndProgram();
 	void Set_IsEndProgram(bool flag);
 	static FuntionManager* Instance();

@@ -10,7 +10,7 @@ public:
 	NetworkSocket();
 	virtual ~NetworkSocket();
 	void Send(const char* sendbuf,int size);
-	bool Recv();
+	bool Recv(char* buffer,int& _size);
 private:
 	int recvn(char* buf, int len, bool flag);
 };

@@ -8,6 +8,14 @@ struct UserInfo
 		ZeroMemory(ID, MAXBUF);
 		is_loging = false;
 	}
+	UserInfo(const char* id, const char* pw)
+	{
+		ZeroMemory(PW, MAXBUF);
+		ZeroMemory(ID, MAXBUF);
+		strcpy(ID, id);
+		strcpy(PW, pw);
+		is_loging = false;
+	}
 	char PW[MAXBUF];
 	char ID[MAXBUF];
 	bool is_loging;

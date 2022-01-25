@@ -15,20 +15,27 @@ void MainMenuManager::Destroy()
 void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 {
 	//MainDialogMem* dialog_param = new MainDialogMem(this, client);
-	int menu_number =0;
+	int menu_number = 0;
 	client->recvbuf.MemoryZero();
 	int retval = DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1);
-	if (retval == IDCANCEL || retval == WM_CLOSE)
+	/*if (retval == IDCANCEL || retval == WM_CLOSE)
 	{
 		client->sendbuf.PackPacket(PROTOCOL::ENDPROGRAM);
 		return;
+	}*/
+	if (retval == IDCANCEL || retval == WM_CLOSE)
+	{
+		menu_number =(int)MENU::END;
 	}
-	menu_number = retval-11;
+	else
+	{
+		menu_number = retval - 11;
+	}
 	this->PackPacket(menu_number);
-	int size=client->sendbuf.PackPacket
+	int size = client->sendbuf.PackPacket
 	(PROTOCOL::MENU_RESULT, this->tempbuf.Data_Pop(), this->tempbuf.Size_Pop());
 	client->Send(client->sendbuf.Data_Pop(), size);
-	
+
 }
 bool MainMenuManager::EndProgram()
 {
@@ -86,7 +93,7 @@ INT_PTR CALLBACK MainMenuManager::DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, 
 			{
 				menu_number = 14;
 			}
-			EndDialog(hDlg,menu_number);
+			EndDialog(hDlg, menu_number);
 			return TRUE;
 		case IDCANCEL:
 			EndDialog(hDlg, IDCANCEL);

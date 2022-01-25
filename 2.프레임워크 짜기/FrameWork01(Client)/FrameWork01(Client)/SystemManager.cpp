@@ -29,11 +29,16 @@ void SystemManager::ProtocolMapInit()
 {
 	protocolFunction[PROTOCOL::MENU_SELECT] = &FuntionManager::MenuSelect;
 	protocolFunction[PROTOCOL::MENU_RESULT] = &FuntionManager::MenuResult;
+	protocolFunction[PROTOCOL::ENDPROGRAM] = &FuntionManager::MenuEnd;
+	protocolFunction[PROTOCOL::LOGININFO] = &FuntionManager::LoginInfo;
+	protocolFunction[PROTOCOL::LOGINRESULT] = &FuntionManager::LoginResult;
+	protocolFunction[PROTOCOL::JOININFO] = &FuntionManager::JoinInfo;
+	protocolFunction[PROTOCOL::JOINRESULT] = &FuntionManager::JoinResult;
 }
 void SystemManager::Start()
 {
 	//hThread[0] = CreateThread(NULL, 0, NetWorkProgram::SendThread, Client, 0, NULL);
-	hThread[0] = CreateThread(NULL, 0, NetWorkProgram::RecvThread, Client, 0, NULL);
+	hThread[0] = CreateThread(NULL, 0, NetWorkProgram::NetworkThread, Client, 0, NULL);
 	PROTOCOL protocol;
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
@@ -41,6 +46,7 @@ void SystemManager::Start()
 	{
 		if (FuntionManager::Instance()->Is_EndProgram())
 		{
+			MessageBox(NULL, "클라이언트 스레드 정상 종료", "종료", MB_OK);
 			return;
 		}
 		if (!Client->recvbuf.is_empty())

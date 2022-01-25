@@ -16,16 +16,26 @@ ProgramManager::ProgramManager()
 	CALL_Program.insert({ STATE::MAIN, &SystemFuntion::MainMenu });
 	CALL_Program.insert({ STATE::LOGIN,&SystemFuntion::LoginMenu });
 	CALL_Program.insert({ STATE::JOIN, &SystemFuntion::JoinMenu });
-	
+	CALL_Program.insert({ STATE::END,&SystemFuntion::EndMenu });
 }
 ProgramManager::~ProgramManager()
 {
 
 }
-void ProgramManager::MainThread()
+void ProgramManager::Init()
 {
 	if (!NetWorkProc::Instance()->Init())//네트워크 초기화
 		return;
+}
+void ProgramManager::End()
+{
+	NetWorkProc::Instance()->End();//마무리작업.
+	ClientManager::Instance()->End();
+	SystemFuntion::Instance()->End();
+}
+void ProgramManager::MainThread()
+{
+	Init();
 	NetWorkProc::Instance()->Start();//프로그램 시작.
 	while (1)
 	{
@@ -41,7 +51,7 @@ void ProgramManager::MainThread()
 		Program_mem->client = client;
 		ProgramManager::ClientThread(Program_mem);
 	}
-	NetWorkProc::Instance()->End();//마무리작업.
+	End();
 }
 void ProgramManager::ClientThread(ProgramMember* member)
 {
@@ -62,6 +72,17 @@ DWORD CALLBACK ProgramManager::Client_Thread(LPVOID arg)
 	STATE state = STATE::MAIN;
 	while (1)
 	{
-		(menu_funtion->*(Program_manager->CALL_Program[state]))(client,state);
+        //종료코드 다음에 더 깔끔해지도록 다시 수정하기. 일단 임시로 사용.
+        #pragma region End_Thread
+		if (state == STATE::END)
+		{
+			(menu_funtion->*(Program_manager->CALL_Program[state]))(client, state);
+			//cout << "프로그램 종료" << endl;
+			ClientManager::Instance()->RemoveClient(client);
+			return 0;
+		}
+        #pragma endregion 
+		(menu_funtion->*(Program_manager->CALL_Program[state]))(client, state);	
 	}
+	
 }

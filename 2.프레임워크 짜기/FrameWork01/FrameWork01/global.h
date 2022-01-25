@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <map>
+#include <fstream>
 
 #define SERVERPORT 9000
 #define MAXBUF 4026
@@ -42,6 +43,7 @@ enum class PROTOCOL
 	JOININFO,
 	JOINRESULT,
 	ENDPROGRAM,
+	BACKPAGE,
 	Max
 };
 

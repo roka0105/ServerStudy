@@ -21,6 +21,8 @@ public:
 	static ProgramManager* Instance();	
 	void MainThread();
 	void ClientThread(ProgramMember* member);
+	void Init();
+	void End();
 private:
 	ProgramManager();
 	~ProgramManager();

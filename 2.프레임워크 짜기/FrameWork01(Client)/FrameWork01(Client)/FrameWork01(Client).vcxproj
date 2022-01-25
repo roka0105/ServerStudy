@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -143,6 +143,7 @@
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="FuntionManager.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="LoginManager.h" />
     <ClInclude Include="MainMenuManager.h" />
     <ClInclude Include="NetworkBuffer.h" />
     <ClInclude Include="NetWorkProgram.h" />
@@ -150,11 +151,13 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="_List.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FuntionManager.cpp" />
+    <ClCompile Include="LoginManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenuManager.cpp" />
     <ClCompile Include="NetworkBuffer.cpp" />

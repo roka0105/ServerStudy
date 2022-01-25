@@ -25,6 +25,9 @@
     <Filter Include="소스 파일\Manager">
       <UniqueIdentifier>{ed60475d-7de8-4d22-a410-3421b3399746}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\STL">
+      <UniqueIdentifier>{74597adb-5d69-4b91-96e2-ffd4dfcb9908}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NetWorkProgram.h">
@@ -60,6 +63,12 @@
     <ClInclude Include="SystemManager.h">
       <Filter>소스 파일\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="_List.h">
+      <Filter>소스 파일\STL</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginManager.h">
+      <Filter>소스 파일\Proccess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NetWorkProgram.cpp">
@@ -91,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="SystemManager.cpp">
       <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginManager.cpp">
+      <Filter>소스 파일\Proccess</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

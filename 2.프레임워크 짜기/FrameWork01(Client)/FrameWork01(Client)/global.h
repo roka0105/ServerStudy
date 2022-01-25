@@ -13,6 +13,15 @@
 
 
 using namespace std;
+enum class MENU
+{
+	None = -1,
+	MAIN = 0,
+	LOGIN,
+	JOIN,
+	END,
+	MAX
+};
 enum class STATE
 {
 	NONE = -1,
@@ -34,6 +43,7 @@ enum class PROTOCOL
 	JOININFO,
 	JOINRESULT,
 	ENDPROGRAM,
+	BACKPAGE,
 	Max
 };
 

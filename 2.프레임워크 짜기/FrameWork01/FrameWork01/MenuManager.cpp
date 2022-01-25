@@ -12,6 +12,14 @@ void MenuManager::Destroy()
 {
 
 }
+void MenuManager::Init()
+{
+
+}
+void MenuManager::End()
+{
+
+}
 void MenuManager::MainProgram(ClientInfo* _client, STATE& _state)
 {
 	int menunumber = 0;
@@ -28,7 +36,7 @@ void MenuManager::MainProgram(ClientInfo* _client, STATE& _state)
 	_client->recvbuf.MemoryZero();
 	if (!_client->Recv())
 	{
-		_state = STATE::EXIT;
+		_state = STATE::END;
 		return;
 	}
 	_client->recvbuf.UnPackPacket(protocol);
@@ -48,6 +56,11 @@ void MenuManager::MainProgram(ClientInfo* _client, STATE& _state)
 		_state = STATE::END;
 		break;
 	}
+}
+void MenuManager::EndProgram(ClientInfo* _client, STATE& _state)
+{
+	int size = _client->sendbuf.PackPacket(PROTOCOL::ENDPROGRAM);
+	_client->Send(_client->sendbuf.Data_Pop(), size);
 }
 void MenuManager::UnPackPacket(const char* recvbuf,int& menu_number)
 {

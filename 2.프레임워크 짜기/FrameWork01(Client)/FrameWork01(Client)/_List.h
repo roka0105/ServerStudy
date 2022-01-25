@@ -9,11 +9,12 @@ private:
 	class Node
 	{
 	public:
-		Node(T input)
+		Node(T input,int size=0)
 		{
 			data = input;
 			next = nullptr;
 			prev = nullptr;
+			datasize = size;
 		}
 		Node()
 		{
@@ -25,15 +26,11 @@ private:
 		{
 			data = input;
 		}
-		friend T& operator<<(T& _data, const Node& node);
-		
-		//friend T& operator=(T& _data,const Node& node);
 		friend ostream& operator<<(ostream& os, const Node& node);
-		//friend T& operator=();
-		//friend void operator=(const T& _data);
 		T data;
 		Node* next;
 		Node* prev;
+		int datasize;
 	};
 	Node* tail;
 	Node* head;
@@ -78,24 +75,6 @@ public:
 		os<<node.data<<endl;
 		return os;
 	}
-	friend T& operator<<(T& _data, const Node& node)
-	{
-		_data = node.data;
-		return _data;
-	}
-	/*friend T& operator=(T& _data, const Node& node)
-	{
-		_data = node->data;
-		return _data;
-	}*/
-	/*friend T& operator=()
-	{
-		return data;
-	}
-	friend void operator=(const T& _data)
-	{
-		data = &_data;
-	}*/
 	_List()
 	{
 		listsize = 0;
@@ -140,11 +119,11 @@ public:
 		}
 		listsize++;
 	}
-	void Push_back(T input)
+	void Push_back(T input,int size=0)
 	{
 		if (listsize == 0)
 		{
-			head = new Node(input);
+			head = new Node(input,size);
 			tail = head;
 			head->prev = fin;
 			head->next = fin;
@@ -153,7 +132,7 @@ public:
 		}
 		else
 		{
-			tail->next = new Node(input);
+			tail->next = new Node(input,size);
 			tail->next->prev = tail;
 			tail->next->next = fin;
 			tail = tail->next;
@@ -254,7 +233,7 @@ public:
 		}
 		for (int i = 0; i < listsize; ++i)
 		{
-			cout << node_array[i]<< " delete" << endl;
+			cout << node_array[i]->data << "delete" << endl;
 			delete node_array[i];
 		}
 		listsize = 0;

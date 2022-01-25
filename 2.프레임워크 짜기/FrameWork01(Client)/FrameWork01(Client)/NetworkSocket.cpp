@@ -12,7 +12,7 @@ void NetworkSocket::Send(const char* sendbuf,int size)
 	if (retval == SOCKET_ERROR)
 		this->err_display("send()");
 }
-bool  NetworkSocket::Recv()
+bool  NetworkSocket::Recv(char* buffer,int& _size)
 {
 	int retval = 0;
 	int size = 0;
@@ -26,9 +26,10 @@ bool  NetworkSocket::Recv()
 	if (retval == SOCKET_ERROR)
 		return false;
 	else if (retval == 0)return false;
-
-	this->recvbuf.Data_Push(buf,size);
-	this->recvbuf.Size_Push(size);
+	memcpy(buffer, buf,size);
+	_size = size;
+	//this->recvbuf.Data_Push(buf,size);
+	//this->recvbuf.Size_Push(size);
 	return true;
 }
 int NetworkSocket::recvn(char* buf, int len,bool flag)
