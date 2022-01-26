@@ -14,13 +14,21 @@ ClientInfo::ClientInfo(ClientInfo& ref)
 	memcpy(&this->addr, &ref.addr, sizeof(SOCKADDR_IN));
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
-	memcpy(buf, ref.sendbuf.Data_Pop(),ref.sendbuf.Size_Pop());
-	this->sendbuf.Data_Push(buf);
+	int size = ref.sendbuf.Size_Pop();
+	memcpy(buf, ref.sendbuf.Data_Pop(),size);
+	this->sendbuf.Data_Push(buf,size);
 	ZeroMemory(buf, MAXBUF);
-	memcpy(buf, ref.recvbuf.Data_Pop(),ref.recvbuf.Size_Pop());
-	this->recvbuf.Data_Push(buf);
+	size = ref.recvbuf.Size_Pop();
+	memcpy(buf, ref.recvbuf.Data_Pop(),size);
+	this->recvbuf.Data_Push(buf,size);
 }
 ClientInfo::~ClientInfo()
 {
 	
+}
+void ClientInfo::SetUserInfo(char* id, char* pw, bool login)
+{
+	strcpy(userInfo.ID, id);
+	strcpy(userInfo.PW, pw);
+	userInfo.is_loging = login;
 }

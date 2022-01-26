@@ -22,7 +22,7 @@ void LoginManager::Init()
 }
 void LoginManager::End()
 {
-	FileSave();
+	//FileSave();
 	int size = UserList.size();
 	cout << "유저정보 메모리 해제" << endl;
 	//유저정보 메모리 해제(List의 data=UserInfo*)
@@ -60,31 +60,31 @@ void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 	if (protocol == PROTOCOL::BACKPAGE)
 	{
 		_state = STATE::MAIN;
-		_client->sendbuf.MemoryZero();
-		size=_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
-		_client->Send(_client->sendbuf.Data_Pop(), size);
+		//_client->sendbuf.MemoryZero();
+		//size=_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
+		//_client->Send(_client->sendbuf.Data_Pop(), size);
 		return;
 	}
 	UnPackPacket(_client->recvbuf.Data_Pop(), ID, PW);
 	//3.로그인 정보를 회원정보와 비교해서 로그인 결과 전송
-	LOGINRESULT result = LoginCheck(ID, PW);
+	RESULT result = LoginCheck(ID, PW);
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
-	int size = 0;
 	switch (result)
 	{
-	case LOGINRESULT::ISLOGINGFAIL:
-		size = PackPacket(buf, "이미 로그인중인 아이디 입니다\r\n");
+	case RESULT::ISLOGINGFAIL:
+		size = PackPacket(buf,RESULT::ISLOGINGFAIL, "이미 로그인중인 아이디 입니다\n");
 		break;
-	case LOGINRESULT::FAIL:
-		size = PackPacket(buf, "로그인 실패\r\n");
+	case RESULT::FAIL:
+		size = PackPacket(buf,RESULT::FAIL, "로그인 실패\n");
 		break;
-	case LOGINRESULT::SUCCESS:
+	case RESULT::SUCCESS:
 		char temp[MAXBUF];
 		ZeroMemory(temp, MAXBUF);
 		_client->GetUserInfo()->is_loging = true;
 		sprintf(temp, "로그인 성공\n환영합니다 %s님!", ID);
-		size = PackPacket(buf, temp);
+		size = PackPacket(buf,RESULT::SUCCESS, temp);
+		_state = STATE::MAIN;
 		break;
 	}
 	_client->sendbuf.MemoryZero();
@@ -114,9 +114,9 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 	if (protocol == PROTOCOL::BACKPAGE)
 	{
 		_state = STATE::MAIN;
-		_client->sendbuf.MemoryZero();
-		size=_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
-		_client->Send(_client->sendbuf.Data_Pop(), size);
+		//_client->sendbuf.MemoryZero();
+		//size=_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
+		//_client->Send(_client->sendbuf.Data_Pop(), size);
 		return;
 	}
 	//3.회원가입 가능한지 체크 후 가입이 완료되면 filesave(); 회원가입 결과정보 send.
@@ -128,17 +128,18 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	_client->sendbuf.MemoryZero();
-	JOINRESULT result=JoinCheck(ID,PW);
+	RESULT result=JoinCheck(ID,PW);
 	switch (result)
 	{
-	case JOINRESULT::SUCCESS:
+	case RESULT::SUCCESS:
 		char temp[MAXBUF];
 		ZeroMemory(temp, MAXBUF);
 		sprintf(temp, "회원가입 성공\n환영합니다 %s님!", ID);
-		size=PackPacket(buf, temp);
+		size=PackPacket(buf,RESULT::SUCCESS, temp);
+		_state = STATE::MAIN;
 		break;
-	case JOINRESULT::FAIL:
-		size = PackPacket(buf, "회원가입 실패\r\n");
+	case RESULT::FAIL:
+		size = PackPacket(buf,RESULT::FAIL, "회원가입 실패\n");
 		break;
 	}
 	_client->sendbuf.MemoryZero();
@@ -174,7 +175,7 @@ bool LoginManager::Is_Loging(ClientInfo* _client, STATE& _state)
 	}
 	return false;
 }
-LoginManager::LOGINRESULT LoginManager::LoginCheck(const char* id,const char* pw)
+LoginManager::RESULT LoginManager::LoginCheck(const char* id,const char* pw)
 {
 	if (!UserList.is_empty())
 	{
@@ -184,18 +185,19 @@ LoginManager::LOGINRESULT LoginManager::LoginCheck(const char* id,const char* pw
 			if (!strcmp(id, user->ID) && !strcmp(pw, user->PW))
 			{
 				if (user->is_loging)
-					return LOGINRESULT::ISLOGINGFAIL;
+					return RESULT::ISLOGINGFAIL;
 				else
 				{
 					user->is_loging = true;
-					return LOGINRESULT::SUCCESS;
+					FileSave();
+					return RESULT::SUCCESS;
 				}
 			}
 		}
 	}
-	return LOGINRESULT::FAIL;
+	return RESULT::FAIL;
 }
-LoginManager::JOINRESULT LoginManager::JoinCheck(const char* id,const char* pw)
+LoginManager::RESULT LoginManager::JoinCheck(const char* id,const char* pw)
 {
 	if (!UserList.is_empty())
 	{
@@ -204,26 +206,26 @@ LoginManager::JOINRESULT LoginManager::JoinCheck(const char* id,const char* pw)
 			UserInfo* user = UserList[i].data;
 			if (!strcmp(id, user->ID))
 			{
-				return JOINRESULT::FAIL;
+				return RESULT::FAIL;
 			}
 		}
 	}
 	UserList.Push_back(new UserInfo(id, pw));
 	FileSave();
-	return JOINRESULT::SUCCESS;
+	return RESULT::SUCCESS;
 }
 void LoginManager::FileSave()
 {
-	FILE* fp = fopen("UserInfo.dat", "wb");
+	FILE* fp = fopen("UserInfo.bin", "wb");
 	if (fp == NULL)
 	{
 		//cout << "파일열기실패!" << endl;
 		return;
 	}
 	cout << "===============파일 쓰기중===============" << endl;
-	while (!UserList.is_empty())
+ 	for(int i=0;i<UserList.size();++i)
 	{
-		UserInfo* user_info = UserList.Pop_front();
+		UserInfo* user_info = UserList[i].data;
 		fwrite(user_info, sizeof(UserInfo), 1, fp);
 		cout << user_info->ID << " " << user_info->PW << " " << user_info->is_loging << endl;
 	}
@@ -231,7 +233,7 @@ void LoginManager::FileSave()
 }
 void LoginManager::FileLoad()
 {
-	FILE* fp = fopen("UserInfo.dat", "rb");
+	FILE* fp = fopen("UserInfo.bin", "rb");
 	if (fp == NULL)
 	{
 		//cout << "파일열기실패!" << endl;
@@ -239,14 +241,32 @@ void LoginManager::FileLoad()
 	}
 	UserInfo* user_info;
 	cout << "===============파일 읽기중===============" << endl;
+	int check = 0;
 	while (!feof(fp))
 	{
 		user_info = new UserInfo();
-		fread(user_info, sizeof(UserInfo), 1, fp);
+		check=fread(user_info, sizeof(UserInfo), 1, fp);
+		if (check == NULL)
+			break;
 		cout << user_info->ID << " " << user_info->PW << " " << user_info->is_loging << endl;
 		UserList.Push_back(user_info);
 	}
 	fclose(fp);
+}
+int LoginManager::PackPacket(char* sendbuf,RESULT result, const char* data)
+{
+	char* ptr = sendbuf;
+	int strsize = strlen(data);
+	int size = 0;
+	memcpy(ptr, &result, sizeof(RESULT));
+	size += sizeof(RESULT);
+	ptr += sizeof(RESULT);
+	memcpy(ptr, &strsize, sizeof(int));
+	size += sizeof(int);
+	ptr += sizeof(int);
+	memcpy(ptr, data, strsize);
+	size += strsize;
+	return size;
 }
 int LoginManager::PackPacket(char* sendbuf, const char* data)
 {

@@ -1,6 +1,8 @@
 #pragma once
 #include "ClientInfo.h"
+#include "NetWorkProgram.h"
 #include "resource.h"
+
 class MainMenuManager
 {
 private:

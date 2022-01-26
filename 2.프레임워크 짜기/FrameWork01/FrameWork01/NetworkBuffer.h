@@ -7,7 +7,7 @@ public:
 	~NetworkBuffer();
 	bool is_empty();
 	void MemoryZero();
-	const char* Data_Pop();
+	char* Data_Pop();
 	void Data_Push(char* data,int size);
 	void Data_Push(char* data);
 	int Size_Pop();

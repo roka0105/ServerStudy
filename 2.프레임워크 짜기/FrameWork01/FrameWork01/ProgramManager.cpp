@@ -26,6 +26,7 @@ void ProgramManager::Init()
 {
 	if (!NetWorkProc::Instance()->Init())//네트워크 초기화
 		return;
+	SystemFuntion::Instance()->Init();
 }
 void ProgramManager::End()
 {

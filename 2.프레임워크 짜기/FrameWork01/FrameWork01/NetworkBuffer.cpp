@@ -18,7 +18,7 @@ void NetworkBuffer::MemoryZero()
 {
 	ZeroMemory(buf, MAXBUF);
 }
-const char* NetworkBuffer::Data_Pop()
+char* NetworkBuffer::Data_Pop()
 {
 	return buf;
 }

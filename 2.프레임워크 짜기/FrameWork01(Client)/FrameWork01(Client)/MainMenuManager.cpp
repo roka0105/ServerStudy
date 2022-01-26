@@ -18,11 +18,6 @@ void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 	int menu_number = 0;
 	client->recvbuf.MemoryZero();
 	int retval = DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1);
-	/*if (retval == IDCANCEL || retval == WM_CLOSE)
-	{
-		client->sendbuf.PackPacket(PROTOCOL::ENDPROGRAM);
-		return;
-	}*/
 	if (retval == IDCANCEL || retval == WM_CLOSE)
 	{
 		menu_number =(int)MENU::END;
@@ -32,10 +27,9 @@ void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 		menu_number = retval - 11;
 	}
 	this->PackPacket(menu_number);
-	int size = client->sendbuf.PackPacket
-	(PROTOCOL::MENU_RESULT, this->tempbuf.Data_Pop(), this->tempbuf.Size_Pop());
-	client->Send(client->sendbuf.Data_Pop(), size);
-
+	client->sendbuf.PackPacket(PROTOCOL::MENU_RESULT, this->tempbuf.Data_Pop(), this->tempbuf.Size_Pop());
+	NetWorkProgram::Instance()->S_Packet_Push(client->sendbuf.Data_Pop(),client->sendbuf.Size_Pop());
+	client->sendbuf.MemoryZero();
 }
 bool MainMenuManager::EndProgram()
 {
@@ -44,6 +38,7 @@ bool MainMenuManager::EndProgram()
 void  MainMenuManager::ShowResult(HINSTANCE ins, ClientInfo* client)
 {
 	tempbuf.MemoryZero();
+	NetWorkProgram::Instance()->R_Packet_Pop(client->recvbuf.Data_Pop(),client->recvbuf.Size_Pop());
 	UnPackPacket(client->recvbuf.Data_Pop(), client->recvbuf.Size_Pop());
 	MessageBox(NULL, tempbuf.Data_Pop(), "입장불가", MB_OK);
 	client->recvbuf.MemoryZero();
@@ -57,7 +52,7 @@ void MainMenuManager::UnPackPacket(const char* buffer, int size)
 	memcpy(&_size, ptr, sizeof(int));
 	ptr += sizeof(int);
 	memcpy(buf, ptr, _size);
-	tempbuf.Data_Push(buf);
+	tempbuf.Data_Push(buf,_size);
 }
 void MainMenuManager::PackPacket(int& menunumber)
 {
@@ -66,9 +61,7 @@ void MainMenuManager::PackPacket(int& menunumber)
 	char* ptr = buf;
 	memcpy(ptr, &menunumber, sizeof(int));
 	ptr = buf;
-	tempbuf.Size_Push(sizeof(int));
-	tempbuf.Data_Push(ptr);
-
+	tempbuf.Data_Push(ptr,sizeof(int));
 }
 INT_PTR CALLBACK MainMenuManager::DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

@@ -28,4 +28,4 @@ ClientInfo::~ClientInfo()
 UserInfo* ClientInfo::GetUserInfo()
 {
 	return userInfo;
-}
+ }

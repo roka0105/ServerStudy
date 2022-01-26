@@ -11,12 +11,15 @@ public:
 	void Init();
 	ClientInfo* Connect();
 	void End();
-	char* R_Packet_Pop();
-	void R_Packet_Push(char* data);
-	char* S_Packet_Pop();
-	void S_Packet_Push(char* sendbuf);
-	//static DWORD WINAPI SendThread(LPVOID arg);
-	static DWORD WINAPI NetworkThread(LPVOID arg);
+	void R_Packet_Pop(char* recvbuf,int& size);
+	void R_Packet_Push(const char* data, int size);
+	//void R_Packet_Push(char* data,int size);
+	//void S_Packet_Pop(char* sendbuf,int& size);
+	void S_Packet_Pop(char* buf, int& size);
+	void S_Packet_Push(const char* sendbuf,int size);
+	bool PacketList_IsEmpty(bool recv);
+	static DWORD WINAPI SendThread(LPVOID arg);
+	static DWORD WINAPI RecvThread(LPVOID arg);
 private:
 	_List<char*> R_PacketList;
 	_List<char*> S_PacketList;

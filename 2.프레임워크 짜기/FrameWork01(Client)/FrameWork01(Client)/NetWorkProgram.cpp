@@ -43,67 +43,86 @@ void NetWorkProgram::End()
 {
 	WSACleanup();
 }
-char* NetWorkProgram::R_Packet_Pop()
+void NetWorkProgram::R_Packet_Pop(char* recvbuf, int& size)
 {
-	R_PacketList.Pop_front();
+	char* buf = R_PacketList.Pop_front(size);
+	memcpy(recvbuf, buf, size);
+	delete buf;
 }
-void NetWorkProgram::R_Packet_Push(char* data)
+void NetWorkProgram::R_Packet_Push(const char* data, int size)
 {
-	R_PacketList.Push_back(data);
+	char* buf = new char[MAXBUF];
+	ZeroMemory(buf, MAXBUF);
+	memcpy(buf, data, size);
+	R_PacketList.Push_back(buf, size);
 }
-char* NetWorkProgram::S_Packet_Pop()
+bool NetWorkProgram::PacketList_IsEmpty(bool recv)
 {
-	S_PacketList.Pop_front();
+	if (recv)
+	{
+		return R_PacketList.is_empty();
+	}
+	else return S_PacketList.is_empty();
 }
-void NetWorkProgram::S_Packet_Push(char* sendbuf)
+void NetWorkProgram::S_Packet_Pop(char* buf, int& size)
 {
-	S_PacketList.Push_back(sendbuf);
+	char* _buf = S_PacketList.Pop_front(size);
+	memcpy(buf, _buf, size);
+	delete _buf;
 }
-//DWORD WINAPI NetWorkProgram::SendThread(LPVOID arg)
-//{
-//	ClientInfo* client = (ClientInfo*)arg;
-//	bool endflag = false;
-//	while (1)
-//	{
-//		if (FuntionManager::Instance()->Is_EndProgram())
-//		{
-//			return 0;
-//		}
-//		if (!client->sendbuf.is_empty())
-//		{
-//			client->Send();
-//		}
-//	}
-//	return 0;
-//}
-DWORD WINAPI NetWorkProgram::NetworkThread(LPVOID arg)
+void NetWorkProgram::S_Packet_Push(const char* sendbuf, int size)
+{
+	char* buf=new char[MAXBUF];
+	ZeroMemory(buf, MAXBUF);
+	memcpy(buf, sendbuf,size);
+	S_PacketList.Push_back(buf, size);
+}
+DWORD WINAPI NetWorkProgram::RecvThread(LPVOID arg)
 {
 	ClientInfo* client = (ClientInfo*)arg;
 	bool endflag = false;
-	char buf[MAXBUF];
-	ZeroMemory(buf, MAXBUF);
+	
 	int size = 0;
 	while (1)
 	{
-		if (FuntionManager::Instance()->Is_EndProgram())
+		char buf[MAXBUF];
+		ZeroMemory(buf, MAXBUF);
+		/*if (FuntionManager::Instance()->Is_EndProgram())
 		{
-			MessageBox(NULL, "네트워크 스레드 정상 종료", "종료", MB_OK);
+			MessageBox(NULL, "recv 스레드 정상 종료", "종료", MB_OK);
 			return 0;
-		}
-		if (!client->Recv(buf,size))
+		}*/
+		if (!client->Recv(buf, size))
 		{
 			FuntionManager::Instance()->Set_IsEndProgram(true);
-			return;
+			MessageBox(NULL, "recv 스레드 정상 종료", "종료", MB_OK);
+			return 0;
 		}
 		//*recvbuf 사용하는 곳들에서 list에서 pop해서 가져다 쓰게 해야함.
-		NetWorkProgram::Instance()->R_PacketList.Push_back(buf,size);
-		size = 0;
+		NetWorkProgram::Instance()->R_Packet_Push(buf,size);
+	}
+	return 0;
+}
+DWORD WINAPI NetWorkProgram::SendThread(LPVOID arg)
+{
+	ClientInfo* client = (ClientInfo*)arg;
+	bool endflag = false;
+
+	int size = 0;
+	while (1)
+	{
+		char buf[MAXBUF];
 		ZeroMemory(buf, MAXBUF);
+		if (FuntionManager::Instance()->Is_EndProgram())
+		{
+			MessageBox(NULL, "send 스레드 정상 종료", "종료", MB_OK);
+			return 0;
+		}
 		if (!NetWorkProgram::Instance()->S_PacketList.is_empty())
 		{
 			//*sendbuf 사용하는곳들에서 send()하지 않고 list에 push 하도록 변경해야함.
-			size = NetWorkProgram::Instance()->S_PacketList[0].datasize;
-		    memcpy(buf,NetWorkProgram::Instance()->S_PacketList.Pop_front(),size);
+			//size = NetWorkProgram::Instance()->S_PacketList[0].datasize;
+			NetWorkProgram::Instance()->S_Packet_Pop(buf, size);
 			client->Send(buf, size);
 		}
 

@@ -91,7 +91,10 @@ char* Alloc_Buffer(int size)
 	memset(buffer, '\0', size);
 	return buffer;
 }
+int TextConvert(const char* filepath,char* data)
+{
 
+}
 int main()
 {
 	//바이너리로 구조체 저장.

@@ -20,8 +20,8 @@ void SystemManager::Init(HINSTANCE hInstance)
 {
 	hInst = hInstance;
 	NetWorkProgram::Instance()->Init();
-	Client= NetWorkProgram::Instance()->Connect();
-	
+	Client = NetWorkProgram::Instance()->Connect();
+
 	ProtocolMapInit();
 	//각종 이벤트 초기화
 }
@@ -37,8 +37,8 @@ void SystemManager::ProtocolMapInit()
 }
 void SystemManager::Start()
 {
-	//hThread[0] = CreateThread(NULL, 0, NetWorkProgram::SendThread, Client, 0, NULL);
-	hThread[0] = CreateThread(NULL, 0, NetWorkProgram::NetworkThread, Client, 0, NULL);
+	hThread[0] = CreateThread(NULL, 0, NetWorkProgram::SendThread, Client, 0, NULL);
+	hThread[1] = CreateThread(NULL, 0, NetWorkProgram::RecvThread, Client, 0, NULL);
 	PROTOCOL protocol;
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
@@ -49,14 +49,16 @@ void SystemManager::Start()
 			MessageBox(NULL, "클라이언트 스레드 정상 종료", "종료", MB_OK);
 			return;
 		}
-		if (!Client->recvbuf.is_empty())
+		if (!NetWorkProgram::Instance()->PacketList_IsEmpty(true))
 		{
+			NetWorkProgram::Instance()->R_Packet_Pop(Client->recvbuf.Data_Pop(), Client->recvbuf.Size_Pop());
 			Client->recvbuf.UnPackPacket(protocol);
 			//함수포인터
 			(FuntionManager::Instance()->*protocolFunction[protocol])
-				(hInst,Client);
+				(hInst, Client);
 		}
 	}
+	WaitForMultipleObjects(2, hThread, TRUE, INFINITE);
 }
 void SystemManager::End()
 {

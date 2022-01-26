@@ -11,7 +11,7 @@ private:
 	public:
 		Node(T input,int size=0)
 		{
-			data = input;
+			data =input;
 			next = nullptr;
 			prev = nullptr;
 			datasize = size;
@@ -140,11 +140,12 @@ public:
 		}
 		listsize++;
 	}
-	T Pop_front()
+	T Pop_front(int&size)
 	{
 		if (listsize <= 0)
 			return 0;
 		T temp = head->data;
+		size = head->datasize;
 		if (listsize == 1)
 		{
 			delete head;

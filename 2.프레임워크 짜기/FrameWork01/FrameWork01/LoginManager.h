@@ -7,7 +7,7 @@ class LoginManager
 private:
 	static LoginManager* instance;
 	_List<UserInfo*> UserList;
-	enum class LOGINRESULT
+	enum class RESULT
 	{
 		NONE = -1,
 		ISLOGINGFAIL,
@@ -15,13 +15,7 @@ private:
 		SUCCESS,
 		MAX
 	};
-	enum class JOINRESULT
-	{
-		NONE = -1,
-		FAIL,
-		SUCCESS,
-		MAX
-	};
+
 public:
 	static LoginManager* Instance();
 	static void Create();
@@ -30,13 +24,14 @@ public:
 	void LoginProgram(ClientInfo* _client, STATE& _state);
 	void JoinProgram(ClientInfo* _client, STATE& _state);
 	bool Is_Loging(ClientInfo* _client,STATE& _state);
-	LOGINRESULT LoginCheck(const char* id,const char* pw);
-	JOINRESULT JoinCheck(const char* id,const char* pw);
+	RESULT LoginCheck(const char* id,const char* pw);
+	RESULT JoinCheck(const char* id,const char* pw);
 	void FileSave();
 	void FileLoad();
 	void End();
 private:
-	int PackPacket(char* sendbuf,const char* data);
+	int PackPacket(char* sendbuf, const char* data);
+	int PackPacket(char* sendbuf,RESULT result,const char* data);
 	void UnPackPacket(const char* recvbuf, char* ID, char* PW);
 	LoginManager();
 	~LoginManager();
