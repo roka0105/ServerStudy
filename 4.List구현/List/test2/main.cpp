@@ -17,12 +17,12 @@
 
 int main()
 {
-	/*
+	
 	_List<int> intList;
 	intList.Push_back(1);
 	intList.Push_back(2);
 	intList.Push_back(3);
-	*/
+	
 	/*cout << "=========pushback===========" << endl;
 	for (_List<int>::_Iterator itr = intList.begin(); itr != intList.end(); ++itr)
 	{
@@ -63,33 +63,34 @@ int main()
 	{
 		cout << *itr << endl;
 	}*/
-	/*
-	for (int i = 0; i < intList.size(); ++i)
+	
+	/*for (int i = 0; i < intList.size(); ++i)
 	{
 		cout << intList[i];
-	}
-
+	}*/
+	int number = intList[0];
+	cout << "number"<<number << endl;
 	intList[0] = 41;
 	cout << intList[0];
-	cout << "====================" << endl;
-	for (int i = 0; i < intList.size(); ++i)
-	{
-		cout << intList[i];
-	}*/
-	/*cout << "=========Clear===========" << endl;
-	intList.Clear();
-	for (int i = 0; i < intList.size(); ++i)
-	{
-		cout << intList[i];
-	}*/
-	/*
-	cout << "=========node =operator===========" << endl;
-	int number;
+	//cout << "====================" << endl;
+	//for (int i = 0; i < intList.size(); ++i)
+	//{
+	//	cout << intList[i];
+	//}
+	//cout << "=========Clear===========" << endl;
+	//intList.Clear();
+	//for (int i = 0; i < intList.size(); ++i)
+	//{
+	//	cout << intList[i];
+	//}
+	//
+	//cout << "=========node =operator===========" << endl;
+	//int number;
 	//전위로 대입연산자 정의가 안되어가지고 임시로 << 를 사용함.
-	number << intList[1];
-	cout << number << endl;
-	*/
-
+	//number << intList[1];
+	//cout << number << endl;
+	
+	/*
 	//==============================================================
 	// *형 list 테스트
 	_List<int*> pointList;
@@ -120,5 +121,6 @@ int main()
 	}
 	cout << "==========리스트 노드 메모리해제=========" << endl;
 	pointList.Clear();
+	pointList[i] = 41;*/
 	return 0;
 }

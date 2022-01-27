@@ -1,0 +1,53 @@
+오늘 배우거나 실수한 점
+1.void는 데이터 타입을 지우기 때문에 void* 같은것도 데이터 타입을 지우고 메모리
+주소만 저장하는것임으로 데이터 주소로부터 몇바이트 읽을것인지 데이터타입을 
+캐스팅 해줘야한다.
+2.구조체 생성자 const char* "안녕하세요"를 멤버 변수에 복사할때 memcpy로 받을때
+  char[100]배열 크기만큼 100을 복사한다 해버리면 안녕하세요가 저장된 메모리에서
+  100을 읽어오기때문에 다른 메모리에 접근해서 그 값까지 읽어온다.
+  따라서 내가 읽어올 문자열의 길이만큼만 복사하도록 해야한다. 
+  
+3.포인터의 사이즈는 64bit = 8byte 32bit=4byte 16bit=2byte
+
+4.구조체에 int char를 만들어놨을때 5byte여야 하는데 8byte가 나오는 현상은
+패딩현상으로 구조체 멤버중 가장 크기가 큰것을 기준으로 잡고 그것의 배수로
+데이터 사이즈를 늘려간다.
+int(4byte)+[char(1byte)+padding(3byte)]= 8byte
+이러는 이유는  cpu가 메모리에 접근하는것을 최소화하여 동작속도를 빠르게 하기 위함
+https://hydroponicglass.tistory.com/184
+https://wnsgml972.github.io/c/2019/11/21/c_struct_padding/
+
+구조체에서 데이터를 선언할때 선언위치에 따라 바이트 수가 달라진다.
+struct A           
+{
+char
+int 
+short
+double
+}
+structB
+{
+int
+char
+short
+double
+}
+이때 가장 큰 8byte 단위로 잡는데
+A: char x x x
+    int int int int
+    short short x x
+     x x x x
+    double double double double
+    double double double double
+ => 24byte
+B: int int int int
+   char short short x
+   double double double
+   double double double
+=> 16 byte 
+
+왜이런것인가 몰랐는데 알게되니 너무 신난다 ㅎㅎ
+5.pragma pack(1)로 패딩비트 없이 데이터를 1byte씩 읽어서 붙일수 있는데 
+  32/64bit 운영체제에서 4byte 기준으로 데이터 처리하는것이 가장 빠른 속도를
+  가지기 때문에 pragmapack의 사용은 속도 저하의 원인이 될 수 있다.
+
