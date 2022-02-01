@@ -15,18 +15,19 @@ void Player::Write(OutPutMemoryStream& oStream)const
 {
 	oStream.Write(mHp);
 	oStream.Write(mMp);
-	oStream.Write((int)mExp);
+	oStream.Write(mExp);
 	oStream.Write(name, MAXBUF);
 }
 void Player::Read(InPutMemoryStream& iStream)const
 {
-	iStream.Read((int*)&mHp);
-	iStream.Read((int*)&mMp);
-	iStream.Read((int*)&mExp);
+	iStream.Read(mHp);
+	iStream.Read(mMp);
+	iStream.Read(mExp);
 	iStream.Read((void*)name,100);
 }
 void Player::Print()
 {
 	cout << "데이터 출력" << endl;
-	cout << mHp << mMp << mExp << name << endl;
+	cout << mHp <<endl<< mMp <<endl<< (float)mExp <<endl<< name << endl;
+	cout<<typeid(mExp).name() << endl;
 }

@@ -113,7 +113,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -139,15 +139,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ByteSwapper.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="InPutMemoryStream.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OutPutMemoryBitStream.cpp" />
     <ClCompile Include="OutPutMemoryStream.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ByteSwapper.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="InPutMemoryStream.h" />
+    <ClInclude Include="OutPutMemoryBitStream.h" />
     <ClInclude Include="OutPutMemoryStream.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

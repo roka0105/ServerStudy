@@ -18,11 +18,11 @@ void InPutMemoryStream::Read(void* Data, int size)
 	memcpy(Data, mBuffer + mHead, size);
 	mHead += size;
 }
-void InPutMemoryStream::Read(unsigned int* Data)
-{
-	Read(Data, sizeof(Data));
-}
-void InPutMemoryStream::Read(int* Data)
-{
-	Read(Data, sizeof(int));
-}
+//void InPutMemoryStream::Read(unsigned int* Data)
+//{
+//	Read(Data, sizeof(Data));
+//}
+//void InPutMemoryStream::Read(int* Data)
+//{
+//	Read(Data, sizeof(int));
+//}

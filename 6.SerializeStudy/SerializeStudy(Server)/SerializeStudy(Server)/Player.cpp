@@ -15,13 +15,13 @@ void Player::Write(OutPutMemoryStream& oStream)const
 {
 	oStream.Write(mHp);
 	oStream.Write(mMp);
-	oStream.Write((int)mExp);
+	oStream.Write(mExp);
 	oStream.Write(name, MAXBUF);
 }
 void Player::Read(InPutMemoryStream& iStream)const
 {
-	iStream.Read((int*)&mHp);
-	iStream.Read((int*)&mMp);
-	iStream.Read((int*)&mExp);
+	iStream.Read(mHp);
+	iStream.Read(mMp);
+	iStream.Read(mExp);
 	iStream.Read((void*)name,100);
 }

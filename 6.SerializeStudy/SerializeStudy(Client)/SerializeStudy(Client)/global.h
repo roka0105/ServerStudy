@@ -9,7 +9,8 @@ using namespace std;
 #define SERVERPORT 9000
 #define SERVERIP "127.0.0.1"
 #define MAXBUF 100
-
+#define STREAM_ENDIAN 0//big
+#define PLATFORM_ENDIAN 1//little
 class Player;
 void err_quit(char* msg);
 void err_display(char* msg);

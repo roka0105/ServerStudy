@@ -18,8 +18,9 @@ int main()
 	if (retval == SOCKET_ERROR)
 		err_quit((char*)"connect");
 	Player player;
+	ZeroMemory(&player, sizeof(Player));
 	//while (1)
-//	{
+    //{
 		RecvPlayerInfo(client_sock, &player);
 		cout << "PlayerInfo" << endl;
 		player.Print();

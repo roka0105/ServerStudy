@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ab82a034-8025-46b8-9f99-0963b99c1513}</ProjectGuid>
-    <RootNamespace>SerializeStudyServer</RootNamespace>
+    <ProjectGuid>{7f32155c-f366-438f-88c7-9d61c4fb4869}</ProjectGuid>
+    <RootNamespace>byteStream</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -85,7 +85,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -113,7 +113,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -139,19 +139,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ByteSwapper.cpp" />
-    <ClCompile Include="global.cpp" />
-    <ClCompile Include="InPutMemoryStream.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="OutPutMemoryStream.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClInclude Include="InPutStream.h" />
+    <ClInclude Include="OutPutStream.h">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ByteSwapper.h" />
-    <ClInclude Include="global.h" />
-    <ClInclude Include="InPutMemoryStream.h" />
-    <ClInclude Include="OutPutMemoryStream.h" />
-    <ClInclude Include="Player.h" />
+    <ClCompile Include="InPutStream.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="OutPutStream.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

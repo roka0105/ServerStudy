@@ -13,8 +13,13 @@ public:
 	char* GetStreamPtr();
 	int GetLength();
 	void Write(const void* inData, size_t inByteCount);
-	void Write(unsigned int inData);
-	void Write(int inData);
+	/*void Write(unsigned int inData);
+	void Write(int inData);*/
+	template <typename T> void Write(const T& inData)
+	{
+		static_assert(is_arithmetic<T>::value || is_enum<T>::value, "Generic Write only supports primitive data types");
+		Write((void*)&inData, sizeof(inData));
+	}
 private:
 	void ReallocBuffer(unsigned int size);
 };

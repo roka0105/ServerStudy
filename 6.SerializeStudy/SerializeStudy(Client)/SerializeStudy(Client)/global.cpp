@@ -25,7 +25,7 @@ int recvn(SOCKET sock, char* buf, int len, bool flag)
 	{
 		received = recv(sock, ptr, left, flag);
 		if (received == SOCKET_ERROR)
-			err_display((char*)"recv");
+			return SOCKET_ERROR;
 		else if (received == 0) return 0;
 		ptr += received;
 		left -= received;
@@ -46,8 +46,8 @@ void RecvPlayerInfo(SOCKET sock, Player* player)
 {
 	int retval = 0;
 	char* buf = new char[sizeof(Player)];
-
-	retval = recvn(sock, buf, sizeof(Player), 0);
+	ZeroMemory(buf, sizeof(Player));
+	retval = recv(sock, buf, sizeof(Player), 0);//recvn(sock, buf, sizeof(Player), 0);
 	if (retval == SOCKET_ERROR)
 		err_display((char*)"Player_recv");
 	if (retval > 0)

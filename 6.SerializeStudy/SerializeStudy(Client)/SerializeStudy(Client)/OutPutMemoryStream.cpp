@@ -26,15 +26,15 @@ void OutPutMemoryStream::Write(const void* inData, size_t inByteCount)
 	memcpy(mBuffer + mHead, inData, inByteCount);
 	mHead = resulthead;
 }
-void OutPutMemoryStream::Write(unsigned int inData)
-{
-	Write(&inData, sizeof(inData));
-}
-void OutPutMemoryStream::Write(int inData)
-{
-	//static_assert(is_arithmetic<T>::value || is_enum<T>::value), "Generic Write only supports primitive data types");
-	Write(&inData, sizeof(inData));
-}
+//void OutPutMemoryStream::Write(unsigned int inData)
+//{
+//	Write(&inData, sizeof(inData));
+//}
+//void OutPutMemoryStream::Write(int inData)
+//{
+//	//static_assert(is_arithmetic<T>::value || is_enum<T>::value), "Generic Write only supports primitive data types");
+//	Write(&inData, sizeof(inData));
+//}
 void OutPutMemoryStream::ReallocBuffer(unsigned int size)
 {
 	mBuffer = (char*)realloc(mBuffer, size);
