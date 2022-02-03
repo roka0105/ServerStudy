@@ -141,11 +141,15 @@
   <ItemGroup>
     <ClInclude Include="global.h" />
     <ClInclude Include="InPutStream.h" />
+    <ClInclude Include="Membervariable.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="OutPutStream.h">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="struct_RTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InPutStream.cpp" />

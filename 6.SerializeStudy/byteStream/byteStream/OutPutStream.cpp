@@ -1,40 +1,46 @@
 #include "OutPutStream.h"
 void OutPutStream::Write(void* Data, size_t Datasize)
 {
-	uint32_t result = m_Head + Datasize;
+	uint32_t result = m_Head + Datasize+sizeof(int);
 	if (m_Capacity < result)
 	{
 		ReAllocBuffer(max(m_Capacity * 2, result));
 	}
-	memcpy(m_Buff + m_Head, Data, Datasize);
+	memcpy(m_Buff + m_Head, &Datasize, sizeof(int));
+	memcpy(m_Buff + m_Head+sizeof(int), Data, Datasize);
 	m_Head = result;
 }
 void OutPutStream::Serialize(void* Data,size_t Datasize)
 {
 	Write(Data,Datasize);
 }
-void OutPutStream::Serialize(char* Data)
+void OutPutStream::Parsing(void* Data, size_t Datasize)
 {
-	Write(Data);
+	memcpy(m_Buff+m_Head, Data, Datasize);
+	m_Head += Datasize;
 }
+//void OutPutStream::Serialize(char* Data)
+//{
+//	Write(Data);
+//}
 bool OutPutStream::IsInput()const
 {
 	return false;
 }
-template <typename T>
-void OutPutStream::Write(T Data)
-{
-	//static_assert(is_arithmetic<T>::value || is_enum<T>::value, "Generic  only supports primitive data types");
-	char* temp = (char*)typeid(T).name();
-	char* buf = strtok(temp," ");
-	
-	if (!strcmp(buf, "char"))
-	{
-		size_t size = strlen((const char*)Data);
-		Write(Data,size);
-	}
-	else Write(&Data, sizeof(Data));
-}
+//template <typename T>
+//void OutPutStream::Write(T Data)
+//{
+//	//static_assert(is_arithmetic<T>::value || is_enum<T>::value, "Generic  only supports primitive data types");
+//	char* temp = (char*)typeid(T).name();
+//	char* buf = strtok(temp," ");
+//	
+//	if (!strcmp(buf, "char"))
+//	{
+//		size_t size = strlen((const char*)Data);
+//		Write(Data,size);
+//	}
+//	else Write(&Data, sizeof(Data));
+//}
 //void OutPutStream::Write(char* Data)
 //{
 //	uint32_t size = strlen(Data);
@@ -52,7 +58,14 @@ void OutPutStream::Write(T Data)
 //}
 void OutPutStream::FileSave()
 {
-
+	FILE* fp = fopen("binary.txt", "wb");
+	if (fp == NULL)
+	{
+		cout << "파일열기실패!" << endl;
+		exit(-1);
+	}
+	fwrite(m_Buff, m_Capacity, 1, fp);
+	fclose(fp);
 }
 void OutPutStream::ReAllocBuffer(uint32_t size)
 {
