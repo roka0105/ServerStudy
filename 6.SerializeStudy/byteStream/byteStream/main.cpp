@@ -1,5 +1,6 @@
 #include "global.h"
 #include "struct_RTTI.h"
+#include <fstream>
 struct Game
 {
 	int id;
@@ -21,14 +22,30 @@ public:
 	//void Printf() { Hi::Printf(); }
 	void Printf(string name) { cout << name << endl; }
 };
-#define OffSet(c,mv) ((size_t)&(static_cast<c*>(nullptr)->mv));
+#define OffSet(c,mv) ((size_t)&(static_cast<c*>(nullptr)->mv))
+
+STRUCT_BEGIN(YES)
+STRUCT_VAR_INT(YES, number)
+STRUCT_VAR_FLOAT(YES, number2)
+STRUCT_END()
+
 int main()
 {
+	YES yes;
+	yes.number = 10;
+	yes.number2 = 0.1f;
+	/*ofstream file("test.txt");
+	if (file.is_open())
+		xml_write(file, yes);*/
+	wofstream file("test.txt");
+	if (file.is_open())
+		xml_write(file, yes);
+	
 	/*Hello hello;
 	hello.Printf();
 	hello.Printf("최예람");
-    */
-    /*int a = 1;
+	*/
+	/*int a = 1;
 	float b = 1.2f;
 	double c = 0.6;
 	const char* buf = "안녕";
@@ -46,11 +63,11 @@ int main()
 	cout << typeid(Hello).name() << endl;
 	cout << sizeof(Game) << endl;
 	cout << sizeof(game) << endl;*/
-	sample temp;
-	sample temp2;
-	cout << OffSet(Player, age);
-	cout << endl;
-	Player yeram("최예람",25,70.2);
+	//sample temp;
+	//sample temp2;
+	//cout << OffSet(Player, age);
+	//cout << endl;
+	Player yeram("최예람", 25, 70.2);
 	OutPutStream outstream;
 	cout << sizeof(yeram.name) << endl;
 	cout << typeid(yeram.name).name() << endl;

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <tchar.h>
 using namespace std;
 
 #define interface class

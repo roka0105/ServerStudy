@@ -1,0 +1,4 @@
+<YES>
+	<number>10</number>
+	<number2>0.1</number2>
+</YES>
