@@ -2,6 +2,8 @@
 #include <iostream>
 #include <map>
 #include <tchar.h>
+#include <fstream>
+#include <cassert>
 using namespace std;
 
 #define interface class

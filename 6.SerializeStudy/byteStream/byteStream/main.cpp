@@ -1,6 +1,6 @@
 #include "global.h"
 #include "struct_RTTI.h"
-#include <fstream>
+
 struct Game
 {
 	int id;
@@ -32,16 +32,23 @@ STRUCT_END()
 int main()
 {
 	YES yes;
-	yes.number = 10;
+	/*yes.number = 10;
 	yes.number2 = 0.1f;
-	/*ofstream file("test.txt");
-	if (file.is_open())
-		xml_write(file, yes);*/
+	//ofstream file("test.txt");
+	//if (file.is_open())
+	//	xml_write(file, yes);
 	wofstream file("test.txt");
 	if (file.is_open())
 		xml_write(file, yes);
 	
-	/*Hello hello;
+	*/
+	ifstream file("test.txt");
+	if (file.is_open())
+		xml_read(file, yes);
+	cout << yes.number << endl;
+	cout << yes.number2 << endl;
+	file.close();
+    /*Hello hello;
 	hello.Printf();
 	hello.Printf("ÃÖ¿¹¶÷");
 	*/

@@ -15,37 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="InPutStream.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="OutPutStream.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
+    <ClCompile Include="struct_testmain.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="reflection_testmain.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="global.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Membervariable.h">
+    <ClInclude Include="structRTTI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="struct_RTTI.h">
+    <ClInclude Include="reflection.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="cpp_reflection.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="InPutStream.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="OutPutStream.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="reflection_main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,0 +1,5 @@
+<yeram>
+	<age>25</age>
+	<username>ÃÖ¿¹¶÷</username>
+	<weight>67.01</weight>
+</yeram>

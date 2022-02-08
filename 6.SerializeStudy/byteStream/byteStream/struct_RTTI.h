@@ -1,7 +1,7 @@
 #pragma once
 #include "global.h"
 #include <string>
-
+#include <tchar.h>
 namespace std
 {
 	typedef wstring tstring;
@@ -116,13 +116,34 @@ bool xml_write(_stream& out, const _struct& obj)
 	out << XML_END_TAG(si.name) << endl;
 	return true;
 }
-//struct register_init
-//{
-//	register_init()zd
-//	{
-//		static bool init = false;
-//		if (!init)
-//			rtti.insert(make_pair(_T(#_name), _info));
-//		init = true;
-//	}
-//};
+
+#define COUNT_OF(_array) (sizeof(_array)/sizeof(_array[0]))
+
+template <typename _stream,typename _struct>
+bool xml_read(_stream& in, _struct& obj)
+{
+	if (rtti.find(obj.name()) == rtti.end())
+		return false;
+
+	const struct_info& si = rtti[_struct::name()];
+	char name[1024], value[1024];
+	memset(name, '\0', 1024);
+	memset(value, '\0', 1024);
+	in.ignore(1024, _T('>'));
+	for (varmap_t::const_iterator iter = si.varmap.begin(); iter != si.varmap.end(); ++iter)
+	{
+		in.ignore(1024, _T('<'));
+		in.getline((char*)name, COUNT_OF(name), _T('>'));
+		in.getline((char*)value, COUNT_OF(value), _T('<'));
+		string s_name(name);
+		tstring t_name;
+		t_name.assign(s_name.begin(), s_name.end());
+		const var_info& vi = si.varmap.find(t_name)->second;
+		switch (vi.type)
+		{
+		case INT:GET_VAR(int, obj, vi.offset) = atoi(value); break;
+		case FLOAT:GET_VAR(float, obj, vi.offset) = static_cast<float>(atof(value)); break;
+		}
+	}
+	return true;
+}
