@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -141,6 +141,8 @@
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientManager.cpp" />
+    <ClCompile Include="DataManager.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="ListenSocket.cpp" />
     <ClCompile Include="LoginManager.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -157,6 +159,8 @@
   <ItemGroup>
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientManager.h" />
+    <ClInclude Include="DataManager.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="ListenSocket.h" />
     <ClInclude Include="LoginManager.h" />

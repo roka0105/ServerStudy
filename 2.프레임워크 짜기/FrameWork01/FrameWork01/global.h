@@ -18,6 +18,8 @@ enum class MENU
 	MAIN = 0,
 	LOGIN,
 	JOIN,
+	LOGOUT,
+	LAUNCHERSTART,
 	END,
 	MAX
 };
@@ -28,6 +30,7 @@ enum class STATE
 	MAIN,
 	LOGIN,
 	JOIN,
+	LAUNCHERSTART,
 	EXIT,
 	END,
 	MAX

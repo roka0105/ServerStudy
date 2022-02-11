@@ -46,11 +46,19 @@ void MenuManager::MainProgram(ClientInfo* _client, STATE& _state)
 
 	switch ((MENU)menunumber)
 	{
+	
 	case MENU::LOGIN:
 		_state = STATE::LOGIN;
 		break;
 	case MENU::JOIN:
 		_state = STATE::JOIN;
+		break;
+	case MENU::LOGOUT:
+		_client->LogOut();
+		_state = STATE::LOGIN;
+		break;
+	case MENU::LAUNCHERSTART:
+		_state = STATE::LAUNCHERSTART;
 		break;
 	case MENU::END:
 		_state = STATE::END;

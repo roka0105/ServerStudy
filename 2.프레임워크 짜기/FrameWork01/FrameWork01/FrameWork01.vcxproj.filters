@@ -19,14 +19,23 @@
     <Filter Include="소스 파일\Client">
       <UniqueIdentifier>{923ff014-4c81-4af6-9bba-2642306b34ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Manager">
-      <UniqueIdentifier>{1480733f-79b4-4e54-8db8-a75b5137e7ba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Singleton">
       <UniqueIdentifier>{9ee9cd1d-6e46-4111-baa4-f276198a07ed}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\STL">
       <UniqueIdentifier>{f8ff0243-8bbb-4acf-a723-bd7ea9c9da05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{1480733f-79b4-4e54-8db8-a75b5137e7ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\GameManager">
+      <UniqueIdentifier>{3be88c87-3d0f-40ce-bcd1-cc60f1a7da71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager\ServerManager">
+      <UniqueIdentifier>{a186b4e6-c7f0-4aab-aa6c-526a9404db5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model">
+      <UniqueIdentifier>{7cd92a6d-f773-4984-9c82-6deadea5cfe8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,28 +57,34 @@
     <ClCompile Include="ClientInfo.cpp">
       <Filter>소스 파일\Client</Filter>
     </ClCompile>
-    <ClCompile Include="ClientManager.cpp">
-      <Filter>소스 파일\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="MainManager.cpp">
-      <Filter>소스 파일\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="NetWorkProc.cpp">
-      <Filter>소스 파일\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="LoginManager.cpp">
-      <Filter>소스 파일\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="SystemFuntion.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="PhoenixSingleton.cpp">
       <Filter>소스 파일\Singleton</Filter>
     </ClCompile>
+    <ClCompile Include="LoginManager.cpp">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClCompile>
     <ClCompile Include="MenuManager.cpp">
-      <Filter>소스 파일\Manager</Filter>
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="MainManager.cpp">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWorkProc.cpp">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientManager.cpp">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>소스 파일\Manager\GameManager</Filter>
     </ClCompile>
     <ClCompile Include="MultiThread.cpp">
+      <Filter>소스 파일\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DataManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,31 +107,37 @@
     <ClInclude Include="ClientInfo.h">
       <Filter>소스 파일\Client</Filter>
     </ClInclude>
-    <ClInclude Include="NetWorkProc.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientManager.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="MainManager.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="LoginManager.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="SystemFuntion.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="PhoenixSingleton.h">
       <Filter>소스 파일\Singleton</Filter>
     </ClInclude>
-    <ClInclude Include="MenuManager.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="_List.h">
       <Filter>소스 파일\STL</Filter>
     </ClInclude>
+    <ClInclude Include="LoginManager.h">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuManager.h">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="MainManager.h">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="NetWorkProc.h">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientManager.h">
+      <Filter>소스 파일\Manager\ServerManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>소스 파일\Manager\GameManager</Filter>
+    </ClInclude>
     <ClInclude Include="MultiThread.h">
+      <Filter>소스 파일\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="DataManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

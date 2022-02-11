@@ -28,7 +28,11 @@ public:
 	ClientInfo(ClientInfo& ref);
 	~ClientInfo();
 	UserInfo* GetUserInfo();
+	void SetUserInfo(char* id, char* pw, bool login);
+	void LogOut();
+	bool LogOutRequest();
 private:
 	UserInfo* userInfo;
+	bool is_logout_request;
 };
 

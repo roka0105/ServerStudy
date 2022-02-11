@@ -32,3 +32,7 @@ void ClientInfo::SetUserInfo(char* id, char* pw, bool login)
 	strcpy(userInfo.PW, pw);
 	userInfo.is_loging = login;
 }
+UserInfo* ClientInfo::GetUserInfo()
+{
+	return &userInfo;
+}

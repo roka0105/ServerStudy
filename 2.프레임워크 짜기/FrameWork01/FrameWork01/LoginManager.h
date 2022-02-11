@@ -24,6 +24,7 @@ public:
 	void LoginProgram(ClientInfo* _client, STATE& _state);
 	void JoinProgram(ClientInfo* _client, STATE& _state);
 	bool Is_Loging(ClientInfo* _client,STATE& _state);
+	bool Is_Logout(ClientInfo* _client, STATE& state);
 	RESULT LoginCheck(const char* id,const char* pw);
 	RESULT JoinCheck(const char* id,const char* pw);
 	void FileSave();

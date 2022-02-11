@@ -10,8 +10,6 @@
 #define MAXBUF 4026
 #define MAXPERSONNEL 100
 
-
-
 using namespace std;
 enum class MENU
 {
@@ -19,6 +17,8 @@ enum class MENU
 	MAIN = 0,
 	LOGIN,
 	JOIN,
+	LOGOUT,
+	LAUNCHERSTART,
 	END,
 	MAX
 };
@@ -29,6 +29,7 @@ enum class STATE
 	MAIN,
 	LOGIN,
 	JOIN,
+	LAUNCHERSTART,
 	EXIT,
 	MAX
 };

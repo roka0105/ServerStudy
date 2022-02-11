@@ -2,12 +2,14 @@
 ClientInfo::ClientInfo()
 {  
 	userInfo = new UserInfo();
+	is_logout_request = false;
 }
 ClientInfo::ClientInfo(SOCKET clientsock, SOCKADDR_IN clientaddr)
 {
 	userInfo = new UserInfo();
 	sock = clientsock;
 	memcpy(&addr, &clientaddr, sizeof(SOCKADDR_IN));
+	is_logout_request = false;
 }
 ClientInfo::ClientInfo(ClientInfo& ref)
 {
@@ -25,7 +27,23 @@ ClientInfo::~ClientInfo()
 {
 	
 }
+void ClientInfo::SetUserInfo(char* id, char* pw, bool login)
+{
+	strcpy(userInfo->ID, id);
+	strcpy(userInfo->PW, pw);
+	userInfo->is_loging = login;
+}
 UserInfo* ClientInfo::GetUserInfo()
 {
 	return userInfo;
  }
+void ClientInfo::LogOut()
+{
+	is_logout_request = true;
+}
+bool  ClientInfo::LogOutRequest()
+{
+	bool check = is_logout_request;
+	is_logout_request = false;
+	return check;
+}

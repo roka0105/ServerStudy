@@ -40,6 +40,8 @@ void LoginManager::End()
 void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 {
 	int size = 0;
+	if (Is_Logout(_client, _state))
+		return;
 	if (Is_Loging(_client, _state))
 		return;
 	//1.로그인입력하라고 클라에 프로토콜 전송
@@ -82,10 +84,7 @@ void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 	case RESULT::SUCCESS:
 		char temp[MAXBUF];
 		ZeroMemory(temp, MAXBUF);
-		UserInfo* user = _client->GetUserInfo();
-		user->is_loging = true;
-		strcpy(user->ID, ID);
-		strcpy(user->PW, PW);
+		_client->SetUserInfo(ID, PW, true);
 		sprintf(temp, "로그인 성공\n환영합니다 %s님!", ID);
 		size = PackPacket(buf,RESULT::SUCCESS, temp);
 		_state = STATE::MAIN;
@@ -101,7 +100,6 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 	int size = 0;
 	if (Is_Loging(_client, _state))
 		return;
-	
 	//1.클라에 회원가입정보 입력하라고 JoinInfo Protocol send
 	_client->sendbuf.MemoryZero();
 	size=_client->sendbuf.PackPacket(PROTOCOL::JOININFO);
@@ -182,6 +180,7 @@ void LoginManager::LogOut(bool allflag,ClientInfo* _client)
 			}
 		}
 	}
+	_client->SetUserInfo((char*)"\0", (char*)"\0", false);
 	FileSave();
 }
 bool LoginManager::Is_Loging(ClientInfo* _client, STATE& _state)
@@ -193,13 +192,27 @@ bool LoginManager::Is_Loging(ClientInfo* _client, STATE& _state)
 	//
 	if (userinfo->is_loging)
 	{
-		NetworkBuffer temp;
 		char buf[MAXBUF];
 		ZeroMemory(buf, MAXBUF);
 		int size = this->PackPacket(buf, "로그인중에는 선택 하실 수 없습니다.\r\n");
 		size = _client->sendbuf.PackPacket(PROTOCOL::MENU_RESULT, buf, size);
 		_client->Send(_client->sendbuf.Data_Pop(), size);
 		_state = STATE::MAIN;
+		return true;
+	}
+	return false;
+}
+bool LoginManager::Is_Logout(ClientInfo* _client, STATE& state)
+{
+	if (_client->LogOutRequest())
+	{
+		char buf[MAXBUF];
+		ZeroMemory(buf, MAXBUF);
+		int size = this->PackPacket(buf, "로그아웃하셨습니다.\r\n");
+		size = _client->sendbuf.PackPacket(PROTOCOL::MENU_RESULT, buf, size);
+		_client->Send(_client->sendbuf.Data_Pop(), size);
+		LogOut(false, _client);
+		state = STATE::MAIN;
 		return true;
 	}
 	return false;
