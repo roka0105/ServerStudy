@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -145,11 +145,12 @@
     <ClCompile Include="LoginManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MenuManager.cpp" />
+    <ClCompile Include="MultiThread.cpp" />
     <ClCompile Include="NetworkBuffer.cpp" />
     <ClCompile Include="NetWorkProc.cpp" />
     <ClCompile Include="NetworkSocket.cpp" />
     <ClCompile Include="PhoenixSingleton.cpp" />
-    <ClCompile Include="ProgramManager.cpp" />
+    <ClCompile Include="MainManager.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SystemFuntion.cpp" />
   </ItemGroup>
@@ -160,11 +161,12 @@
     <ClInclude Include="ListenSocket.h" />
     <ClInclude Include="LoginManager.h" />
     <ClInclude Include="MenuManager.h" />
+    <ClInclude Include="MultiThread.h" />
     <ClInclude Include="NetworkBuffer.h" />
     <ClInclude Include="NetWorkProc.h" />
     <ClInclude Include="NetworkSocket.h" />
     <ClInclude Include="PhoenixSingleton.h" />
-    <ClInclude Include="ProgramManager.h" />
+    <ClInclude Include="MainManager.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="SystemFuntion.h" />
     <ClInclude Include="_List.h" />

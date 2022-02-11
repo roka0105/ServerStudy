@@ -24,6 +24,7 @@ void LoginManager::End()
 {
 	//FileSave();
 	int size = UserList.size();
+	LogOut(true);
 	cout << "유저정보 메모리 해제" << endl;
 	//유저정보 메모리 해제(List의 data=UserInfo*)
 	for (int i = 0; i < size; ++i)
@@ -81,7 +82,10 @@ void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 	case RESULT::SUCCESS:
 		char temp[MAXBUF];
 		ZeroMemory(temp, MAXBUF);
-		_client->GetUserInfo()->is_loging = true;
+		UserInfo* user = _client->GetUserInfo();
+		user->is_loging = true;
+		strcpy(user->ID, ID);
+		strcpy(user->PW, PW);
 		sprintf(temp, "로그인 성공\n환영합니다 %s님!", ID);
 		size = PackPacket(buf,RESULT::SUCCESS, temp);
 		_state = STATE::MAIN;
@@ -97,6 +101,7 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 	int size = 0;
 	if (Is_Loging(_client, _state))
 		return;
+	
 	//1.클라에 회원가입정보 입력하라고 JoinInfo Protocol send
 	_client->sendbuf.MemoryZero();
 	size=_client->sendbuf.PackPacket(PROTOCOL::JOININFO);
@@ -154,6 +159,30 @@ LoginManager::LoginManager()
 LoginManager::~LoginManager()
 {
 
+}
+void LoginManager::LogOut(bool allflag,ClientInfo* _client)
+{
+	int size = UserList.size();
+	for (int i = 0; i < size; ++i)
+	{
+		if (UserList[i].data->is_loging)
+		{
+			if (!allflag)
+			{
+				if (!strcmp(UserList[i].data->ID, _client->GetUserInfo()->ID))
+				{
+					UserList[i].data->is_loging = false;
+					cout << UserList[i].data->ID << "님 로그아웃" << endl;
+				}
+			}
+			else
+			{
+				UserList[i].data->is_loging = false;
+				cout << "모든 유저 로그아웃" << endl;
+			}
+		}
+	}
+	FileSave();
 }
 bool LoginManager::Is_Loging(ClientInfo* _client, STATE& _state)
 {

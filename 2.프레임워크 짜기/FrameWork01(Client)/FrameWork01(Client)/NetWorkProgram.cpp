@@ -125,7 +125,6 @@ DWORD WINAPI NetWorkProgram::SendThread(LPVOID arg)
 			NetWorkProgram::Instance()->S_Packet_Pop(buf, size);
 			client->Send(buf, size);
 		}
-
 	}
 	return 0;
 }

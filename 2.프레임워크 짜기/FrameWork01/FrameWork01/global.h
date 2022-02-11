@@ -53,7 +53,7 @@ enum class PROTOCOL
 //#include "NetWorkProc.h"
 //#include "ClientInfo.h"
 //#include "ClientManager.h"
-//#include "ProgramManager.h"
+//#include "MainManager.h"
 //#include "LoginManager.h"
 //#include "SystemFuntion.h"
 

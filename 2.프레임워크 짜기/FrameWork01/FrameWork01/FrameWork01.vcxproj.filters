@@ -51,7 +51,7 @@
     <ClCompile Include="ClientManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="ProgramManager.cpp">
+    <ClCompile Include="MainManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
     <ClCompile Include="NetWorkProc.cpp">
@@ -68,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="MenuManager.cpp">
       <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiThread.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +98,7 @@
     <ClInclude Include="ClientManager.h">
       <Filter>소스 파일\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="ProgramManager.h">
+    <ClInclude Include="MainManager.h">
       <Filter>소스 파일\Manager</Filter>
     </ClInclude>
     <ClInclude Include="LoginManager.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="_List.h">
       <Filter>소스 파일\STL</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiThread.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

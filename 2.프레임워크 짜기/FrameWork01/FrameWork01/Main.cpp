@@ -1,8 +1,10 @@
-#include "ProgramManager.h"
+#include "MainManager.h"
 int main(int argv,char*argc[])
 {
-	ProgramManager* Program_Manager=ProgramManager::Instance();
+	MainManager::Create();
+	MainManager* Program_Manager=MainManager::Instance();
 	
-	Program_Manager->MainThread();
+	Program_Manager->Loop();
+	MainManager::Destroy();
 	return 0;
 }

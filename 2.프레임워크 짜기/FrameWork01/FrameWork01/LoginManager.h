@@ -29,6 +29,7 @@ public:
 	void FileSave();
 	void FileLoad();
 	void End();
+	void LogOut(bool allflag=false,ClientInfo* _client=nullptr);
 private:
 	int PackPacket(char* sendbuf, const char* data);
 	int PackPacket(char* sendbuf,RESULT result,const char* data);
