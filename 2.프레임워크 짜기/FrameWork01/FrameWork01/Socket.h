@@ -11,8 +11,6 @@ public:
 	void err_quit(const char* msg);
 	void err_display(const char* msg);
 	SOCKADDR_IN GetAddr();
-protected:
-	SOCKET sock;
-	SOCKADDR_IN addr;
+
 };
 

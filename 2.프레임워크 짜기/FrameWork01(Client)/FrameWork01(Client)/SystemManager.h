@@ -22,6 +22,7 @@ public:
 	static void Create();
 	static void Destroy();
 private:
+	void UnPackPacket(const char* buffer, PROTOCOL& protocol);
 	SystemManager();
 	~SystemManager();
 };

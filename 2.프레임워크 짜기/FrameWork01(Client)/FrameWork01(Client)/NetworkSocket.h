@@ -1,16 +1,21 @@
 #pragma once
-#include "Socket.h"
-#include "NetworkBuffer.h"
-class NetworkSocket:public Socket
+#include "global.h"
+class NetworkSocket
 {
-public:
-	NetworkBuffer sendbuf;
-	NetworkBuffer recvbuf;
 public:
 	NetworkSocket();
 	virtual ~NetworkSocket();
-	void Send(const char* sendbuf,int size);
-	bool Recv(char* buffer,int& _size);
+protected:
+	void Send(const char* databuf, int size);
+	bool Recv(char* databuf, int& size);
+	void err_quit(const char* msg);
+	void err_display(const char* msg);
+	SOCKADDR_IN GetAddr();
 private:
 	int recvn(char* buf, int len, bool flag);
+protected:
+	char buf[MAXBUF];
+	int bufsize;
+	SOCKET sock;
+	SOCKADDR_IN addr;
 };

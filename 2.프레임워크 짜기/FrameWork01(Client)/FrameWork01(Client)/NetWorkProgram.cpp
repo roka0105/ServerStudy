@@ -43,7 +43,7 @@ void NetWorkProgram::End()
 {
 	WSACleanup();
 }
-void NetWorkProgram::R_Packet_Pop(char* recvbuf, int& size)
+void NetWorkProgram::R_Packet_Pop(char* recvbuf,int&size)
 {
 	char* buf = R_PacketList.Pop_front(size);
 	memcpy(recvbuf, buf, size);

@@ -11,7 +11,7 @@ public:
 	void Init();
 	ClientInfo* Connect();
 	void End();
-	void R_Packet_Pop(char* recvbuf,int& size);
+	void R_Packet_Pop(char* recvbuf,int&size);
 	void R_Packet_Push(const char* data, int size);
 	//void R_Packet_Push(char* data,int size);
 	//void S_Packet_Pop(char* sendbuf,int& size);

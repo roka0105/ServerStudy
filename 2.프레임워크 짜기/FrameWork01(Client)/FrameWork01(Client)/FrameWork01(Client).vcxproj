@@ -140,30 +140,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClientInfo.h" />
-    <ClInclude Include="FileManager.h" />
     <ClInclude Include="FuntionManager.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="LoginManager.h" />
     <ClInclude Include="MainMenuManager.h" />
-    <ClInclude Include="NetworkBuffer.h" />
     <ClInclude Include="NetWorkProgram.h" />
     <ClInclude Include="NetworkSocket.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Socket.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="_List.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
-    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FuntionManager.cpp" />
     <ClCompile Include="LoginManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenuManager.cpp" />
-    <ClCompile Include="NetworkBuffer.cpp" />
     <ClCompile Include="NetWorkProgram.cpp" />
     <ClCompile Include="NetworkSocket.cpp" />
-    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>

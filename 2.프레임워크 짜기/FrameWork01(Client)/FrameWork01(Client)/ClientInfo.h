@@ -25,8 +25,16 @@ class ClientInfo :public NetworkSocket
 private:
 	UserInfo userInfo;
 public:
+	SOCKADDR_IN GetAddr();
+	void Send(const char* databuf, int size);
+	bool Recv(char* databuf,int&size);
+	void err_display(const char* msg);
+	void err_quit(const char* msg);
 	UserInfo* GetUserInfo();
 	void SetUserInfo(char* id, char* pw, bool login);
+	void SetData(const char* data,int size);
+	void GetData(char* data, int& size);
+	void ClearData();
 	ClientInfo();
 	ClientInfo(SOCKET clientsock, SOCKADDR_IN clientaddr);
 	ClientInfo(ClientInfo& ref);

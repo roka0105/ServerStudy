@@ -141,19 +141,16 @@
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientManager.cpp" />
-    <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="ListenSocket.cpp" />
     <ClCompile Include="LoginManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MenuManager.cpp" />
     <ClCompile Include="MultiThread.cpp" />
-    <ClCompile Include="NetworkBuffer.cpp" />
     <ClCompile Include="NetWorkProc.cpp" />
     <ClCompile Include="NetworkSocket.cpp" />
     <ClCompile Include="PhoenixSingleton.cpp" />
     <ClCompile Include="MainManager.cpp" />
-    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SystemFuntion.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,12 +163,10 @@
     <ClInclude Include="LoginManager.h" />
     <ClInclude Include="MenuManager.h" />
     <ClInclude Include="MultiThread.h" />
-    <ClInclude Include="NetworkBuffer.h" />
     <ClInclude Include="NetWorkProc.h" />
     <ClInclude Include="NetworkSocket.h" />
     <ClInclude Include="PhoenixSingleton.h" />
     <ClInclude Include="MainManager.h" />
-    <ClInclude Include="Socket.h" />
     <ClInclude Include="SystemFuntion.h" />
     <ClInclude Include="_List.h" />
   </ItemGroup>

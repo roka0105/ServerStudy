@@ -36,12 +36,6 @@
     <ClInclude Include="ClientInfo.h">
       <Filter>소스 파일\Client</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkBuffer.h">
-      <Filter>소스 파일\Socket</Filter>
-    </ClInclude>
-    <ClInclude Include="Socket.h">
-      <Filter>소스 파일\Socket</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkSocket.h">
       <Filter>소스 파일\Socket</Filter>
     </ClInclude>
@@ -55,9 +49,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FuntionManager.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
       <Filter>소스 파일\Manager</Filter>
     </ClInclude>
     <ClInclude Include="SystemManager.h">
@@ -80,12 +71,6 @@
     <ClCompile Include="ClientInfo.cpp">
       <Filter>소스 파일\Client</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkBuffer.cpp">
-      <Filter>소스 파일\Socket</Filter>
-    </ClCompile>
-    <ClCompile Include="Socket.cpp">
-      <Filter>소스 파일\Socket</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkSocket.cpp">
       <Filter>소스 파일\Socket</Filter>
     </ClCompile>
@@ -93,9 +78,6 @@
       <Filter>소스 파일\Proccess</Filter>
     </ClCompile>
     <ClCompile Include="FuntionManager.cpp">
-      <Filter>소스 파일\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
     <ClCompile Include="SystemManager.cpp">

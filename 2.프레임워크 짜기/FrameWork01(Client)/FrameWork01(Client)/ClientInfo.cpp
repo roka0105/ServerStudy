@@ -1,7 +1,6 @@
 #include "ClientInfo.h"
 ClientInfo::ClientInfo()
 {  
-	Socket();
 }
 ClientInfo::ClientInfo(SOCKET clientsock, SOCKADDR_IN clientaddr)
 {
@@ -12,15 +11,10 @@ ClientInfo::ClientInfo(ClientInfo& ref)
 {
 	this->sock = ref.sock;
 	memcpy(&this->addr, &ref.addr, sizeof(SOCKADDR_IN));
-	char buf[MAXBUF];
+
 	ZeroMemory(buf, MAXBUF);
-	int size = ref.sendbuf.Size_Pop();
-	memcpy(buf, ref.sendbuf.Data_Pop(),size);
-	this->sendbuf.Data_Push(buf,size);
-	ZeroMemory(buf, MAXBUF);
-	size = ref.recvbuf.Size_Pop();
-	memcpy(buf, ref.recvbuf.Data_Pop(),size);
-	this->recvbuf.Data_Push(buf,size);
+	int size = ref.bufsize;
+	memcpy(buf, ref.buf,size);
 }
 ClientInfo::~ClientInfo()
 {
@@ -35,4 +29,40 @@ void ClientInfo::SetUserInfo(char* id, char* pw, bool login)
 UserInfo* ClientInfo::GetUserInfo()
 {
 	return &userInfo;
+}
+SOCKADDR_IN ClientInfo::GetAddr()
+{
+	return NetworkSocket::GetAddr();
+}
+void ClientInfo::Send(const char* databuf, int size)
+{
+	NetworkSocket::Send(databuf, size);
+}
+bool ClientInfo::Recv(char* databuf, int& size)
+{
+	return NetworkSocket::Recv(databuf,size);
+}
+void ClientInfo::err_display(const char* msg)
+{
+	NetworkSocket::err_display(msg);
+}
+void ClientInfo::err_quit(const char* msg)
+{
+	NetworkSocket::err_quit(msg);
+}
+void ClientInfo::SetData(const char* data,int size)
+{
+	const char* ptr = data + sizeof(PROTOCOL);
+	memcpy(buf, data, size);
+	bufsize = size;
+}
+void ClientInfo::GetData(char* data, int& size)
+{
+	size = bufsize;
+	memcpy(data, buf, bufsize);
+}
+void ClientInfo::ClearData()
+{
+	ZeroMemory(buf, MAXBUF);
+	bufsize = 0;
 }

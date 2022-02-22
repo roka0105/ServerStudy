@@ -41,9 +41,11 @@ void SystemManager::Start()
 	hThread[1] = CreateThread(NULL, 0, NetWorkProgram::RecvThread, Client, 0, NULL);
 	PROTOCOL protocol;
 	char buf[MAXBUF];
-	ZeroMemory(buf, MAXBUF);
+	int size;
 	while (1)
 	{
+		ZeroMemory(buf, MAXBUF);
+		size = 0;
 		if (FuntionManager::Instance()->Is_EndProgram())
 		{
 			MessageBox(NULL, "클라이언트 스레드 정상 종료", "종료", MB_OK);
@@ -51,11 +53,16 @@ void SystemManager::Start()
 		}
 		if (!NetWorkProgram::Instance()->PacketList_IsEmpty(true))
 		{
-			NetWorkProgram::Instance()->R_Packet_Pop(Client->recvbuf.Data_Pop(), Client->recvbuf.Size_Pop());
-			Client->recvbuf.UnPackPacket(protocol);
+			NetWorkProgram::Instance()->R_Packet_Pop(buf,size);
+			UnPackPacket(buf, protocol);
+			size -= sizeof(PROTOCOL);
+			if(size!=0)
+			Client->SetData(buf+sizeof(PROTOCOL), size);
 			//함수포인터
 			(FuntionManager::Instance()->*protocolFunction[protocol])
 				(hInst, Client);
+
+			Client->ClearData();
 		}
 	}
 	WaitForMultipleObjects(2, hThread, TRUE, INFINITE);
@@ -66,6 +73,11 @@ void SystemManager::End()
 
 	NetWorkProgram::Instance()->End();
 	return;
+}
+void SystemManager::UnPackPacket(const char* buffer, PROTOCOL& protocol)
+{
+	const char* ptr = buffer;
+	memcpy(&protocol, buffer, sizeof(PROTOCOL));
 }
 SystemManager::SystemManager()
 {

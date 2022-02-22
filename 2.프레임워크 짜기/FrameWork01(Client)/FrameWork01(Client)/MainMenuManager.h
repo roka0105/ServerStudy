@@ -17,7 +17,6 @@ private:
 		ClientInfo* Client;
 	};
 	static MainMenuManager* instance;
-	NetworkBuffer tempbuf;
 public:
 	static MainMenuManager* Instance();
 	static void Create();
@@ -26,8 +25,8 @@ public:
 	void ShowResult(HINSTANCE ins, ClientInfo* client);
 	bool EndProgram();
 private:
-	void UnPackPacket(const char* buffer, int size);
-	void PackPacket(int& menunumber);
+	void UnPackPacket(const char* buffer, int size,char* data);
+	int PackPacket(char* buffer,PROTOCOL protocol,int& menunumber);
 	MainMenuManager();
 	~MainMenuManager();
 	static INT_PTR CALLBACK DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);

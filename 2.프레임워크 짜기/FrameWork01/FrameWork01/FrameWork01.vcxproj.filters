@@ -48,12 +48,6 @@
     <ClCompile Include="NetworkSocket.cpp">
       <Filter>소스 파일\Socket</Filter>
     </ClCompile>
-    <ClCompile Include="Socket.cpp">
-      <Filter>소스 파일\Socket</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkBuffer.cpp">
-      <Filter>소스 파일\Socket</Filter>
-    </ClCompile>
     <ClCompile Include="ClientInfo.cpp">
       <Filter>소스 파일\Client</Filter>
     </ClCompile>
@@ -84,24 +78,15 @@
     <ClCompile Include="MultiThread.cpp">
       <Filter>소스 파일\Model</Filter>
     </ClCompile>
-    <ClCompile Include="DataManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Socket.h">
-      <Filter>소스 파일\Socket</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkSocket.h">
       <Filter>소스 파일\Socket</Filter>
     </ClInclude>
     <ClInclude Include="ListenSocket.h">
-      <Filter>소스 파일\Socket</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkBuffer.h">
       <Filter>소스 파일\Socket</Filter>
     </ClInclude>
     <ClInclude Include="ClientInfo.h">

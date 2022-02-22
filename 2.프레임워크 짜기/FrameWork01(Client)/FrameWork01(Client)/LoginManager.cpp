@@ -25,6 +25,7 @@ void LoginManager::End()
 }
 void LoginManager::LoginInfo(HINSTANCE ins, ClientInfo* client)
 {
+	int size = 0;
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(ID, MAXBUF);
@@ -32,30 +33,32 @@ void LoginManager::LoginInfo(HINSTANCE ins, ClientInfo* client)
 	int retval=DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG2), NULL, DlgProc2);
 	if (retval == WM_CLOSE || retval == IDCANCEL)
 	{
-		client->sendbuf.PackPacket(PROTOCOL::BACKPAGE);
-		NetWorkProgram::Instance()->S_Packet_Push(client->sendbuf.Data_Pop(), client->sendbuf.Size_Pop());
-		client->sendbuf.MemoryZero();
+		size=PackPacket(buf,PROTOCOL::BACKPAGE);
+		NetWorkProgram::Instance()->S_Packet_Push(buf, size);
 		return;
 	}
-	int size = PackPacket(buf, ID, PW);
-	client->sendbuf.PackPacket(PROTOCOL::LOGININFO, buf, size);
-	NetWorkProgram::Instance()->S_Packet_Push(client->sendbuf.Data_Pop(), client->sendbuf.Size_Pop());
+	size = PackPacket(buf,PROTOCOL::LOGININFO, ID, PW);
+	NetWorkProgram::Instance()->S_Packet_Push(buf, size);
 }
 void LoginManager::LoginResult(HINSTANCE ins, ClientInfo* client)
 {
 	RESULT result;
+	int size = 0;
 	char buf[MAXBUF];
+	char temp[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
-	UnPackPacket(client->recvbuf.Data_Pop(), result, buf);
-	MessageBox(NULL, buf, "로그인결과", MB_OK);
+	ZeroMemory(temp, MAXBUF);
+	client->GetData(buf, size);
+	UnPackPacket(buf, result, temp);
+	MessageBox(NULL, temp, "로그인결과", MB_OK);
 	if (result == RESULT::SUCCESS)
 	{
 		client->SetUserInfo(ID, PW, true);
 	}
-	client->recvbuf.MemoryZero();
 }
 void LoginManager::JoinInfo(HINSTANCE ins, ClientInfo* client)
 {
+	int size = 0;
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
 	ZeroMemory(ID, MAXBUF);
@@ -63,23 +66,24 @@ void LoginManager::JoinInfo(HINSTANCE ins, ClientInfo* client)
 	int retval = DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG2), NULL, DlgProc3);
 	if (retval == WM_CLOSE || retval == IDCANCEL)
 	{
-		client->sendbuf.PackPacket(PROTOCOL::BACKPAGE);
-		NetWorkProgram::Instance()->S_Packet_Push(client->sendbuf.Data_Pop(), client->sendbuf.Size_Pop());
-		client->sendbuf.MemoryZero();
+		size=PackPacket(buf,PROTOCOL::BACKPAGE);
+		NetWorkProgram::Instance()->S_Packet_Push(buf, size);
 		return;
 	}
-	int size=PackPacket(buf, ID, PW);
-	client->sendbuf.PackPacket(PROTOCOL::JOININFO, buf, size);
-	NetWorkProgram::Instance()->S_Packet_Push(client->sendbuf.Data_Pop(), client->sendbuf.Size_Pop());
+	size=PackPacket(buf,PROTOCOL::JOININFO, ID, PW);
+	NetWorkProgram::Instance()->S_Packet_Push(buf, size);
 }
 void LoginManager::JoinResult(HINSTANCE ins, ClientInfo* client)
 {
 	RESULT result;
 	char buf[MAXBUF];
+	char temp[MAXBUF];
+	int size = 0;
 	ZeroMemory(buf, MAXBUF);
-	UnPackPacket(client->recvbuf.Data_Pop(), result, buf);
-	MessageBox(NULL, buf, "회원가입결과", MB_OK);
-	client->recvbuf.MemoryZero();
+	ZeroMemory(temp, MAXBUF);
+	client->GetData(buf, size);
+	UnPackPacket(buf, result, temp);
+	MessageBox(NULL, temp, "회원가입결과", MB_OK);
 }
 INT_PTR CALLBACK LoginManager::DlgProc2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -147,11 +151,14 @@ LoginManager::~LoginManager()
 {
 
 }
-int LoginManager::PackPacket(char* buf, const char* id, const char* pw)
+int LoginManager::PackPacket(char* buf,PROTOCOL protocol, const char* id, const char* pw)
 {
-	char* ptr = buf;
+	char* ptr = buf+sizeof(int);
 	int size = 0;
 	int strsize = strlen(id);
+	memcpy(ptr, &protocol, sizeof(PROTOCOL));
+	size += sizeof(PROTOCOL);
+	ptr += sizeof(PROTOCOL);
 	memcpy(ptr, &strsize, sizeof(int));
 	ptr += sizeof(int);
 	size += sizeof(int);
@@ -164,11 +171,25 @@ int LoginManager::PackPacket(char* buf, const char* id, const char* pw)
 	size += sizeof(int);
 	memcpy(ptr, pw, strsize);
 	size += strsize;
+	ptr = buf;
+	memcpy(ptr, &size, sizeof(int));
+	size += sizeof(int);
+	return size;
+}
+int LoginManager::PackPacket(char* buf, PROTOCOL protocol)
+{
+	char* ptr = buf + sizeof(int);
+	int size = 0;
+	memcpy(ptr, &protocol, sizeof(PROTOCOL));
+	size += sizeof(PROTOCOL);
+	ptr = buf;
+	memcpy(ptr, &size, sizeof(int));
+	size += sizeof(int);
 	return size;
 }
 void LoginManager::UnPackPacket(const char* recvbuf, RESULT& result,char* msg)
 {
-	const char* ptr = recvbuf+sizeof(PROTOCOL);
+	const char* ptr = recvbuf;
 	int strsize = 0;
 	memcpy(&result, ptr, sizeof(RESULT));
 	ptr += sizeof(RESULT);

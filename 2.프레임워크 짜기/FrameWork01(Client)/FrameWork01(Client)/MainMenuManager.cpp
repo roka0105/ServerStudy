@@ -16,7 +16,9 @@ void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 {
 	//MainDialogMem* dialog_param = new MainDialogMem(this, client);
 	int menu_number = 0;
-	client->recvbuf.MemoryZero();
+	int size = 0;
+	char buf[MAXBUF];
+	ZeroMemory(buf, MAXBUF);
 	//int retval = DialogBox(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1);
 	int retval = DialogBoxParam(ins, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc1, (LPARAM)client);
 	if (retval == IDCANCEL || retval == WM_CLOSE)
@@ -31,10 +33,8 @@ void  MainMenuManager::MenuSelect(HINSTANCE ins, ClientInfo* client)
 			client->SetUserInfo((char*)"\0",(char*)"\0", false);
 		}
 	}
-	this->PackPacket(menu_number);
-	client->sendbuf.PackPacket(PROTOCOL::MENU_RESULT, this->tempbuf.Data_Pop(), this->tempbuf.Size_Pop());
-	NetWorkProgram::Instance()->S_Packet_Push(client->sendbuf.Data_Pop(),client->sendbuf.Size_Pop());
-	client->sendbuf.MemoryZero();
+	size = PackPacket(buf,PROTOCOL::MENU_RESULT,menu_number);
+	NetWorkProgram::Instance()->S_Packet_Push(buf,size);
 }
 bool MainMenuManager::EndProgram()
 {
@@ -42,30 +42,36 @@ bool MainMenuManager::EndProgram()
 }
 void  MainMenuManager::ShowResult(HINSTANCE ins, ClientInfo* client)
 {
-	tempbuf.MemoryZero();
-	UnPackPacket(client->recvbuf.Data_Pop(), client->recvbuf.Size_Pop());
-	MessageBox(NULL, tempbuf.Data_Pop(), "입장불가", MB_OK);
-	client->recvbuf.MemoryZero();
-}
-void MainMenuManager::UnPackPacket(const char* buffer, int size)
-{
+	int size = 0;
 	char buf[MAXBUF];
 	ZeroMemory(buf, MAXBUF);
-	const char* ptr = buffer + sizeof(PROTOCOL);
+	char temp[MAXBUF];
+	ZeroMemory(temp, MAXBUF);
+	client->GetData(buf, size);
+	UnPackPacket(buf, size,temp);
+	MessageBox(NULL, temp, "입장불가", MB_OK);
+}
+void MainMenuManager::UnPackPacket(const char* buffer, int size,char* data)
+{
+	const char* ptr = buffer;
 	int _size = 0;
 	memcpy(&_size, ptr, sizeof(int));
 	ptr += sizeof(int);
-	memcpy(buf, ptr, _size);
-	tempbuf.Data_Push(buf,_size);
+	memcpy(data, ptr, _size);
 }
-void MainMenuManager::PackPacket(int& menunumber)
+int MainMenuManager::PackPacket(char* buffer,PROTOCOL protocol,int& menunumber)
 {
-	char buf[MAXBUF];
-	ZeroMemory(buf, MAXBUF);
-	char* ptr = buf;
+	char* ptr = buffer+sizeof(int);
+	int size = 0;
+	memcpy(ptr, &protocol, sizeof(PROTOCOL));
+	size += sizeof(PROTOCOL);
+	ptr += sizeof(PROTOCOL);
 	memcpy(ptr, &menunumber, sizeof(int));
-	ptr = buf;
-	tempbuf.Data_Push(ptr,sizeof(int));
+	size += sizeof(int);
+	ptr = buffer;
+	memcpy(ptr, &size, sizeof(int));
+	size += sizeof(int);
+	return size;
 }
 INT_PTR CALLBACK MainMenuManager::DlgProc1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

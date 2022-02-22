@@ -31,7 +31,8 @@ public:
 private:
 	static INT_PTR CALLBACK DlgProc2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static INT_PTR CALLBACK DlgProc3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	int PackPacket(char* buf, const char* id, const char* pw);
+	int PackPacket(char* buf,PROTOCOL protocol, const char* id, const char* pw);
+	int PackPacket(char* buf, PROTOCOL protocol);
 	void UnPackPacket(const char* recvbuf, RESULT& result,char* msg);
 	LoginManager();
 	~LoginManager();

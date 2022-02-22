@@ -243,21 +243,21 @@ public:
 	{
 		return _Iterator(fin);
 	}
-	Node& operator[](int index)
+	T operator[](int index)
 	{
 		int check = 0;
 		if (listsize <= index)
 		{
 			cout << "ÀÎµ¦½º ÃÊ°ú" << endl;
-			Node* temp = nullptr;
-			return *temp;
+			//Node* temp = nullptr;
+			return nullptr;
 		}
 		for (_Iterator itr = begin(); itr != end(); ++itr)
 		{
 			if (check == index)
 			{
 				Node* temp = &itr;
-				return *temp;
+				return temp->data;
 			}
 			check++;
 		}

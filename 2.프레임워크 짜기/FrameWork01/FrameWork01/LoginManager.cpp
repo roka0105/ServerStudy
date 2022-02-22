@@ -30,7 +30,7 @@ void LoginManager::End()
 	for (int i = 0; i < size; ++i)
 	{
 		UserInfo* temp;
-		temp = UserList[i].data;
+		temp = UserList[i];
 		delete temp;
 	}
 	//리스트 메모리 해제(List의 Node 메모리 해제)
@@ -45,11 +45,13 @@ void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 	if (Is_Loging(_client, _state))
 		return;
 	//1.로그인입력하라고 클라에 프로토콜 전송
-	size = _client->sendbuf.PackPacket(PROTOCOL::LOGININFO);
-	_client->Send(_client->sendbuf.Data_Pop(), size);
+	_client->Send(PROTOCOL::LOGININFO,nullptr,0);
 	//2.로그인 정보를 클라에게 받아옴 recv
 	// +받아온 리시브 정보가 back(뒤로가기)이면 state=메인메뉴로 돌리고 클라에 Menuselect 프로토콜 전송 후 return;
-	if (!_client->Recv())
+	PROTOCOL protocol;
+	char databuf[MAXBUF];
+	ZeroMemory(databuf, MAXBUF);
+	if (!_client->Recv(protocol,databuf))
 	{
 		_state = STATE::END;
 		return;
@@ -58,8 +60,6 @@ void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 	ZeroMemory(ID, MAXBUF);
 	char PW[MAXBUF];
 	ZeroMemory(PW, MAXBUF);
-	PROTOCOL protocol;
-	_client->recvbuf.UnPackPacket(protocol);
 	if (protocol == PROTOCOL::BACKPAGE)
 	{
 		_state = STATE::MAIN;
@@ -68,31 +68,28 @@ void LoginManager::LoginProgram(ClientInfo* _client, STATE& _state)
 		//_client->Send(_client->sendbuf.Data_Pop(), size);
 		return;
 	}
-	UnPackPacket(_client->recvbuf.Data_Pop(), ID, PW);
+	UnPackPacket(databuf, ID, PW);
 	//3.로그인 정보를 회원정보와 비교해서 로그인 결과 전송
 	RESULT result = LoginCheck(ID, PW);
-	char buf[MAXBUF];
-	ZeroMemory(buf, MAXBUF);
+	ZeroMemory(databuf, MAXBUF);
 	switch (result)
 	{
 	case RESULT::ISLOGINGFAIL:
-		size = PackPacket(buf,RESULT::ISLOGINGFAIL, "이미 로그인중인 아이디 입니다\n");
+		size = PackPacket(databuf,RESULT::ISLOGINGFAIL, "이미 로그인중인 아이디 입니다\n");
 		break;
 	case RESULT::FAIL:
-		size = PackPacket(buf,RESULT::FAIL, "로그인 실패\n");
+		size = PackPacket(databuf,RESULT::FAIL, "로그인 실패\n");
 		break;
 	case RESULT::SUCCESS:
 		char temp[MAXBUF];
 		ZeroMemory(temp, MAXBUF);
 		_client->SetUserInfo(ID, PW, true);
 		sprintf(temp, "로그인 성공\n환영합니다 %s님!", ID);
-		size = PackPacket(buf,RESULT::SUCCESS, temp);
+		size = PackPacket(databuf,RESULT::SUCCESS, temp);
 		_state = STATE::MAIN;
 		break;
 	}
-	_client->sendbuf.MemoryZero();
-	size=_client->sendbuf.PackPacket(PROTOCOL::LOGINRESULT, buf, size);
-	_client->Send(_client->sendbuf.Data_Pop(), size);
+	_client->Send(PROTOCOL::LOGINRESULT, databuf, size);
 	cout << "Login" << endl;
 }
 void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
@@ -101,25 +98,20 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 	if (Is_Loging(_client, _state))
 		return;
 	//1.클라에 회원가입정보 입력하라고 JoinInfo Protocol send
-	_client->sendbuf.MemoryZero();
-	size=_client->sendbuf.PackPacket(PROTOCOL::JOININFO);
-	_client->Send(_client->sendbuf.Data_Pop(), size);
+	_client->Send(PROTOCOL::JOININFO,nullptr,0);
 	//2.클라에서 회원가입정보 받아옴
 	// +받아온 리시브 정보가 back(뒤로가기)이면 state=메인메뉴로 돌리고 클라에 Menuselect 프로토콜 전송 후 return;
-	_client->recvbuf.MemoryZero();
-	if (!_client->Recv())
+	PROTOCOL protocol;
+	char databuf[MAXBUF];
+	ZeroMemory(databuf, MAXBUF);
+	if (!_client->Recv(protocol,databuf))
 	{
 		_state = STATE::END;
 		return;
 	}
-	PROTOCOL protocol;
-	_client->recvbuf.UnPackPacket(protocol);
 	if (protocol == PROTOCOL::BACKPAGE)
 	{
 		_state = STATE::MAIN;
-		//_client->sendbuf.MemoryZero();
-		//size=_client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
-		//_client->Send(_client->sendbuf.Data_Pop(), size);
 		return;
 	}
 	//3.회원가입 가능한지 체크 후 가입이 완료되면 filesave(); 회원가입 결과정보 send.
@@ -127,10 +119,8 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 	char PW[MAXBUF];
 	ZeroMemory(ID, MAXBUF);
 	ZeroMemory(PW, MAXBUF);
-	UnPackPacket(_client->recvbuf.Data_Pop(), ID, PW);
-	char buf[MAXBUF];
-	ZeroMemory(buf, MAXBUF);
-	_client->sendbuf.MemoryZero();
+	UnPackPacket(databuf, ID, PW);
+	ZeroMemory(databuf, MAXBUF);
 	RESULT result=JoinCheck(ID,PW);
 	switch (result)
 	{
@@ -138,16 +128,14 @@ void LoginManager::JoinProgram(ClientInfo* _client, STATE& _state)
 		char temp[MAXBUF];
 		ZeroMemory(temp, MAXBUF);
 		sprintf(temp, "회원가입 성공\n환영합니다 %s님!", ID);
-		size=PackPacket(buf,RESULT::SUCCESS, temp);
+		size=PackPacket(databuf,RESULT::SUCCESS, temp);
 		_state = STATE::MAIN;
 		break;
 	case RESULT::FAIL:
-		size = PackPacket(buf,RESULT::FAIL, "회원가입 실패\n");
+		size = PackPacket(databuf,RESULT::FAIL, "회원가입 실패\n");
 		break;
 	}
-	_client->sendbuf.MemoryZero();
-	size = _client->sendbuf.PackPacket(PROTOCOL::JOINRESULT, buf, size);
-	_client->Send(_client->sendbuf.Data_Pop(), size);
+	_client->Send(PROTOCOL::JOINRESULT, databuf, size);
 	cout << "Join" << endl;
 }
 LoginManager::LoginManager()
@@ -163,19 +151,19 @@ void LoginManager::LogOut(bool allflag,ClientInfo* _client)
 	int size = UserList.size();
 	for (int i = 0; i < size; ++i)
 	{
-		if (UserList[i].data->is_loging)
+		if (UserList[i]->is_loging)
 		{
 			if (!allflag)
 			{
-				if (!strcmp(UserList[i].data->ID, _client->GetUserInfo()->ID))
+				if (!strcmp(UserList[i]->ID, _client->GetUserInfo()->ID))
 				{
-					UserList[i].data->is_loging = false;
-					cout << UserList[i].data->ID << "님 로그아웃" << endl;
+					UserList[i]->is_loging = false;
+					cout << UserList[i]->ID << "님 로그아웃" << endl;
 				}
 			}
 			else
 			{
-				UserList[i].data->is_loging = false;
+				UserList[i]->is_loging = false;
 				cout << "모든 유저 로그아웃" << endl;
 			}
 		}
@@ -186,7 +174,6 @@ void LoginManager::LogOut(bool allflag,ClientInfo* _client)
 bool LoginManager::Is_Loging(ClientInfo* _client, STATE& _state)
 {
 	UserInfo* userinfo = _client->GetUserInfo();
-	_client->sendbuf.MemoryZero();
 	//test
 	//userinfo->is_loging = true;
 	//
@@ -195,8 +182,7 @@ bool LoginManager::Is_Loging(ClientInfo* _client, STATE& _state)
 		char buf[MAXBUF];
 		ZeroMemory(buf, MAXBUF);
 		int size = this->PackPacket(buf, "로그인중에는 선택 하실 수 없습니다.\r\n");
-		size = _client->sendbuf.PackPacket(PROTOCOL::MENU_RESULT, buf, size);
-		_client->Send(_client->sendbuf.Data_Pop(), size);
+		_client->Send(PROTOCOL::MENU_RESULT, buf, size);
 		_state = STATE::MAIN;
 		return true;
 	}
@@ -209,8 +195,7 @@ bool LoginManager::Is_Logout(ClientInfo* _client, STATE& state)
 		char buf[MAXBUF];
 		ZeroMemory(buf, MAXBUF);
 		int size = this->PackPacket(buf, "로그아웃하셨습니다.\r\n");
-		size = _client->sendbuf.PackPacket(PROTOCOL::MENU_RESULT, buf, size);
-		_client->Send(_client->sendbuf.Data_Pop(), size);
+		_client->Send(PROTOCOL::MENU_RESULT, buf, size);
 		LogOut(false, _client);
 		state = STATE::MAIN;
 		return true;
@@ -223,7 +208,7 @@ LoginManager::RESULT LoginManager::LoginCheck(const char* id,const char* pw)
 	{
 		for (int i = 0; i < UserList.size(); ++i)
 		{
-			UserInfo* user = UserList[i].data;
+			UserInfo* user = UserList[i];
 			if (!strcmp(id, user->ID) && !strcmp(pw, user->PW))
 			{
 				if (user->is_loging)
@@ -245,7 +230,7 @@ LoginManager::RESULT LoginManager::JoinCheck(const char* id,const char* pw)
 	{
 		for (int i = 0; i < UserList.size(); ++i)
 		{
-			UserInfo* user = UserList[i].data;
+			UserInfo* user = UserList[i];
 			if (!strcmp(id, user->ID))
 			{
 				return RESULT::FAIL;
@@ -267,7 +252,7 @@ void LoginManager::FileSave()
 	cout << "===============파일 쓰기중===============" << endl;
  	for(int i=0;i<UserList.size();++i)
 	{
-		UserInfo* user_info = UserList[i].data;
+		UserInfo* user_info = UserList[i];
 		fwrite(user_info, sizeof(UserInfo), 1, fp);
 		cout << user_info->ID << " " << user_info->PW << " " << user_info->is_loging << endl;
 	}
@@ -324,7 +309,7 @@ int LoginManager::PackPacket(char* sendbuf, const char* data)
 }
 void LoginManager::UnPackPacket(const char* recvbuf, char* ID, char* PW)
 {
-	const char* ptr = recvbuf + sizeof(PROTOCOL);
+	const char* ptr = recvbuf;
 	int strsize = 0;
 	memcpy(&strsize, ptr, sizeof(int));
 	ptr += sizeof(int);

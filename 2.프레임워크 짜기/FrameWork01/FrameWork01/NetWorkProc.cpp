@@ -2,7 +2,6 @@
 NetWorkProc* NetWorkProc::instance = nullptr;
 NetWorkProc* NetWorkProc::Instance()
 {
-	
 	return instance;
 }
 void NetWorkProc::Create()

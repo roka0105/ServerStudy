@@ -26,21 +26,18 @@ void MenuManager::MainProgram(ClientInfo* _client, STATE& _state)
 	int size = 0;
 	int retval = 0;
 	PROTOCOL protocol;
-	char buf[MAXBUF];
-	ZeroMemory(buf, MAXBUF);
+	char databuf[MAXBUF];
+	ZeroMemory(databuf, MAXBUF);
 
-	_client->sendbuf.MemoryZero();
-	size = _client->sendbuf.PackPacket(PROTOCOL::MENU_SELECT);
-	_client->Send(_client->sendbuf.Data_Pop(), size);
+	_client->Send(PROTOCOL::MENU_SELECT,nullptr, 0);
 
-	_client->recvbuf.MemoryZero();
-	if (!_client->Recv())
+	if (!_client->Recv(protocol,databuf))
 	{
 		_state = STATE::END;
 		return;
 	}
-	_client->recvbuf.UnPackPacket(protocol);
-	UnPackPacket(_client->recvbuf.Data_Pop(), menunumber);
+
+	UnPackPacket(databuf, menunumber);
 	//결과 체크 후 send
 	//state는 해당하는것으로 바꾸기.
 
@@ -67,11 +64,10 @@ void MenuManager::MainProgram(ClientInfo* _client, STATE& _state)
 }
 void MenuManager::EndProgram(ClientInfo* _client, STATE& _state)
 {
-	int size = _client->sendbuf.PackPacket(PROTOCOL::ENDPROGRAM);
-	_client->Send(_client->sendbuf.Data_Pop(), size);
+	_client->Send(PROTOCOL::ENDPROGRAM,nullptr, 0);
 }
 void MenuManager::UnPackPacket(const char* recvbuf, int& menu_number)
 {
-	const char* ptr = recvbuf + sizeof(PROTOCOL);
+	const char* ptr = recvbuf;
 	memcpy(&menu_number, ptr, sizeof(int));
 }
